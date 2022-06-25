@@ -12,3 +12,9 @@
 
 1. type `python3 -m pip install <your-new-dependency>`
 1. add the new dependacy to `requirements.txt`
+
+## Make Migration
+
+1. Change your models (in models.py).
+1. Run `python3 manage.py makemigrations` to create migrations for those changes
+1. Run `python3 manage.py migrate` to apply those changes to the database.
