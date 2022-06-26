@@ -1,0 +1,27 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
+
+    <title>Sindo App</title>
+  </head>
+  <body class="bg-light ">
+    <div class="bg-white container-fluid g-0">
+      
+      {% block content %}
+      {% endblock %}
+      <!-- Content -->
+
+    </div>
+
+    <!-- jQuery first, then Popper.js + Bootstrap JS -->
+    <script src="{% static 'bootstrap/jquery-3.4.1.slim.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>
