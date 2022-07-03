@@ -82,7 +82,7 @@
                         <td> 
                             <!-- <a class="btn btn-sm btn-primary"> view </a> -->
                             {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-success"> edit </a>
+                                <a class="btn btn-sm btn-success" href="{% url 'warehouse_items_edit' order.warehousing_number %}> edit </a>
                                 <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
                             {% else %}
                                 <a class="btn btn-sm btn-success disabled"> edit </a>
@@ -126,7 +126,7 @@
                         <td> 
                             <!-- <a class="btn btn-sm btn-primary"> view </a> -->
                             {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-success"> edit </a>
+                                <a class="btn btn-sm btn-success"  href="{% url 'warehouse_items_edit' order.warehousing_number %}"> edit </a>
                                 <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
                             {% else %}
                                 <a class="btn btn-sm btn-success disabled"> edit </a>
