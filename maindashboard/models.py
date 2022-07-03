@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class DeliveryParty(models.Model):
-    name = models.CharField(primary_key=True, max_length=200)
+    name = models.CharField(unique=True, max_length=200)
 
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -14,7 +14,7 @@ class DeliveryParty(models.Model):
 
 
 class Marking(models.Model):
-    name = models.CharField(primary_key=True, max_length=200)
+    name = models.CharField(unique=True, max_length=200)
 
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -31,8 +31,11 @@ class OrderItem(models.Model):
     marking = models.ForeignKey(
         Marking, on_delete=models.CASCADE, null=False, blank=False)
     product_name = models.CharField(max_length=300, null=False, blank=False)
-    product_img = models.ImageField()
+    product_img = models.ImageField(null=True, blank=True)
     entry_date = models.DateField()
+    volume = models.FloatField(null=True, blank=True)
+    weight = models.FloatField(null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
 
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
