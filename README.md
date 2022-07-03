@@ -18,3 +18,13 @@
 1. Change your models (in models.py).
 1. Run `python3 manage.py makemigrations` to create migrations for those changes
 1. Run `python3 manage.py migrate` to apply those changes to the database.
+
+## Env File
+
+Create `.env` file
+
+```
+SECRET_KEY=dummy-secret-key
+DEBUG=True
+DATABASE_URL=mysql://user:password@localhost:3306/dbname
+```
