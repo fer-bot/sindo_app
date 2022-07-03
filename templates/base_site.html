@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -11,8 +11,25 @@
 
     <title>Sindo App</title>
   </head>
-  <body class="bg-light ">
-    <div class="bg-white container-fluid g-0">
+  <body class="bg-light">
+    <div class="bg-white container-fluid g-0 h-100" style="min-height: 100vh; max-height: 100%;">
+
+      {% if messages %}
+        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                {% for message in messages %}
+                  <p>{{ message }}</p>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
       
       {% block content %}
       {% endblock %}
@@ -23,5 +40,11 @@
     <!-- jQuery first, then Popper.js + Bootstrap JS -->
     <script src="{% static 'jquery-3.4.1.slim.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- JS for modal -->
+    <script>
+      var myModal = new bootstrap.Modal(document.getElementById('modal'), {})
+      myModal.toggle()
+    </script>
   </body>
 </html>

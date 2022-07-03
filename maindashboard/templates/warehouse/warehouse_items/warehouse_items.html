@@ -1,0 +1,150 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Warehouse</li>
+              <li class="breadcrumb-item active" aria-current="page">List of Items</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> List of Items </h3>
+            <div class="btn-group btn-group-sm m-2" role="group">
+                <a type="button" class="btn btn-success" href="{% url 'warehouse_items_new' %}">+ New</a>
+            </div>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+    
+        {% if orders %}
+        <div style="overflow-x: auto;" class="p-3">
+            <table class="table table-hover table-bordered" style="width: 2000px">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
+                        <th scope="col" style="width: 100px" class="text-center">quantity</th>
+                        <th scope="col" style="width: 150px" class="text-center">entry date</th>
+                        <th scope="col" style="width: 200px" class="text-center">delivery party</th>
+                        <th scope="col" style="width: 200px" class="text-center">marking</th>
+                        <th scope="col" style="width: 600px" class="text-center">product name</th>
+                        <th scope="col" style="width: 100px" class="text-center">location</th>
+                        <th scope="col" style="width: 150px" class="text-center">volume</th>
+                        <th scope="col" style="width: 150px" class="text-center">weight</th>
+                        <th scope="col" style="width: 100px" class="text-center">image</th>
+                        <th scope="col" style="width: 300px" class="text-center">description</th>
+                        <th scope="col" style="width: 100px" class="text-center">verified</th>
+                        <th scope="col" style="width: 100px" class="text-center">action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    {% if order.sz_qty %}
+                        <tr>
+                        <th scope="row">{{ order.warehousing_number }}</th>
+                        <td>{{ order.sz_qty }} {{order.quantity_unit}}</td>
+                        <td>{{ order.entry_date }}</td>
+                        <td>{{ order.delivery_party.name }}</td>
+                        <td>{{ order.marking.name }}</td>
+                        <td>{{ order.product_name }}</td>
+                        <td> shenzhen warehouse </td>
+                        <td>{% if order.volume %} 
+                            {{ order.volume }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.weight %} 
+                            {{ order.weight }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>
+                            {% if order.product_img %} 
+                            <img class="img-thumbnail" src="/media/{{ order.product_img }}" alt="no img"/>
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.description %} 
+                            {{ order.description }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td class="text-center"> 
+                            {% if order.verified_at %} 
+                            <span class="badge rounded-pill text-bg-success">✓</span>
+                            {% else %} 
+                            <span class="badge rounded-pill text-bg-danger">✘</span>
+                            {% endif %}
+                        </td>
+                        <td> 
+                            <!-- <a class="btn btn-sm btn-primary"> view </a> -->
+                            {% if not order.verified_at %} 
+                                <a class="btn btn-sm btn-success"> edit </a>
+                                <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
+                            {% else %}
+                                <a class="btn btn-sm btn-success disabled"> edit </a>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endif %}
+                    {% if order.gz_qty %}
+                        <tr>
+                        <th scope="row">{{ order.warehousing_number }}</th>
+                        <td>{{ order.gz_qty }} {{order.quantity_unit}}</td>
+                        <td>{{ order.entry_date }}</td>
+                        <td>{{ order.delivery_party.name }}</td>
+                        <td>{{ order.marking.name }}</td>
+                        <td>{{ order.product_name }}</td>
+                        <td> guangzhou warehouse </td>
+                        <td>{% if order.volume %} 
+                            {{ order.volume }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.weight %} 
+                            {{ order.weight }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>
+                            {% if order.product_img %} 
+                            <img class="img-thumbnail" src="/media/{{ order.product_img }}" alt="no img"/>
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.description %} 
+                            {{ order.description }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td class="text-center"> 
+                            {% if order.verified_at %} 
+                            <span class="badge rounded-pill text-bg-success">✓</span>
+                            {% else %} 
+                            <span class="badge rounded-pill text-bg-danger">✘</span>
+                            {% endif %}
+                        </td>
+                        <td> 
+                            <!-- <a class="btn btn-sm btn-primary"> view </a> -->
+                            {% if not order.verified_at %} 
+                                <a class="btn btn-sm btn-success"> edit </a>
+                                <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
+                            {% else %}
+                                <a class="btn btn-sm btn-success disabled"> edit </a>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No orders are available.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Warehouse</li>
+              <li class="breadcrumb-item active" aria-current="page">Marking</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Marking </h3>
+            <div class="btn-group btn-group-sm m-2" role="group">
+                <a type="button" class="btn btn-success" href="{% url 'marking_new' %}">+ New</a>
+            </div>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+    
+        {% if markings %}
+        <div style="overflow-x: auto;" class="p-3">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Id</th>
+                        <th scope="col" class="text-center">Name</th>
+                        <th scope="col" class="text-center">description</th>
+                        <th scope="col" class="text-center">action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for marking in markings %}
+                        <tr>
+                        <td>{{ marking.id }}</td>
+                        <th scope="row">{{ marking.name }}</th>
+                        <td>
+                            {% if marking.description %} 
+                            {{ marking.description }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-success" href="{% url 'marking_edit' marking.id %}"> edit </a>
+                        </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No Marking are available.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

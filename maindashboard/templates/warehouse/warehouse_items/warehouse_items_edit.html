@@ -1,0 +1,105 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Warehouse</li>
+              <li class="breadcrumb-item"><a href="{% url 'warehouse_items' %}">List of Items</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Edit Item </h3>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+        <div class="card w-75 shadow">
+        <div class="card-body">
+        <form action="{% url 'warehouse_items_new' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="productName" class="form-label">Product Name*</label>
+              <input type="text" class="form-control" id="productName" name="productName" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="entryDate" class="form-label">Entry Date*</label>
+                <input type="date" class="form-control" id="entryDate" name="entryDate">
+            </div>
+
+            <div class="mb-3">
+                <label for="deliveryParty" class="form-label">Delivery Party*</label>
+                <select class="form-control selectpicker" id="deliveryParty" name="deliveryParty" data-live-search="true">
+                    <option disabled selected>Select Delivery Party</option>
+                    {% for party in delivery_parties %}
+                        <option data-tokens="{{party.name}}" value="{{party.id}}">{{party.id}}. {{party.name}} </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="marking" class="form-label">Marking*</label>
+                <select class="form-control selectpicker" id="marking" name="marking" data-live-search="true">
+                    <option disabled selected>Select Marking</option>
+                    {% for marking in markings %}
+                        <option data-tokens="{{marking.name}}" value="{{marking.id}}"> {{marking.id}}. {{marking.name}}  </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="warehouse" class="form-label">Warehouse Location*</label>
+                <select class="form-control selectpicker" id="warehouse" name="warehouse" data-live-search="true" required>
+                    <option disabled selected>Select warehouse</option>
+                    <option data-tokens="guangzhou warehouse" value="guangzhou warehouse"> Guang Zhou </option>
+                    <option data-tokens="shenzhen warehouse" value="shenzhen warehouse"> Shen Zhen </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="productImage" class="form-label">Product Picture</label>
+                <div class="input-group">
+                    <input class="form-control" type="file" id="productImage" name="productImage" accept="image/*">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity*</label>
+                <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantityUnit" class="form-label">Quantity Unit</label>
+                <input type="text" class="form-control" id="quantityUnit" name="quantityUnit" required value="box">
+            </div>
+
+            <div class="mb-3">
+                <label for="volume" class="form-label">Volume*</label>
+                <input type="number" min="0" class="form-control" id="volume" name="volume" step=any required>
+            </div>
+
+            <div class="mb-3">
+                <label for="weight" class="form-label">Weight*</label>
+                <input type="number" min="0" class="form-control" id="weight" name="weight" step=any required>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" name="description"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
