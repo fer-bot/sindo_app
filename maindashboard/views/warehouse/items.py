@@ -109,11 +109,19 @@ def warehouse_items_edit(request, item_id):
         item.entry_date = item.entry_date.strftime("%Y-%m-%d")
         selectedDeliveryParty = get_object_or_404(DeliveryParty, pk=item.delivery_party_id)
         selectedMarking = get_object_or_404(Marking , pk = item.marking_id)
-        selectedTransferInfo = get_object_or_404(TransferInfo, pk = item.warehousing_number)
+        selectedTransferInfo = TransferInfo.objects.filter(order_item_id = item.warehousing_number).all()
+        checkQty = []
+        for x in selectedTransferInfo : 
+            if(x.from_detail != 'china retail'):
+                orderQty = x.order_quantity * -1
+            else:
+                orderQty = x.order_quantity
+            checkQty.append(orderQty)
+        sumQty = sum(checkQty)
         markings =  Marking.objects.order_by('name')
         context = {
             'item': item, 
-            'selectedTransferInfo' : selectedTransferInfo,
+            'qtyTransferInfo' : sumQty,
             'deliveryParty' : deliveryParty, 
             'selectedDeliveryParty' : selectedDeliveryParty,
             'selectedMarking' : selectedMarking,
@@ -143,17 +151,47 @@ def warehouse_items_edit(request, item_id):
         item.description = description
 
         item.save()
-        transferInfoSelected = TransferInfo.objects.filter(order_item_id = item_id).first()
-        # print(transferInfoSelected.to_detail)
-        # newTransferInfo = TransferInfo(
-        #         from_detail=from_detail,
-        #         to_detail=to_detail,
-        #         order_item=newItem,
-        #         order_quantity=order_quantity,
-        #         volume=volume,
-        #         weight=weight,
-        #         description="automated"
-        #     )
+        transferInfoSingle= get_object_or_404(TransferInfo, pk=item_id)
+        warehousePlace = ""
+        if(transferInfoSingle.from_detail != "china retail"): 
+            warehousePlace = transferInfoSingle.from_detail
+        else :
+            warehousePlace = transferInfoSingle.to_detail
+        transferInfoSelected = TransferInfo.objects.filter(order_item_id = item_id).all()
+        checkQty = []
+        for x in transferInfoSelected : 
+            if(x.from_detail != 'china retail'):
+                orderQty = x.order_quantity * -1
+            else:
+                orderQty = x.order_quantity
+            checkQty.append(orderQty)
+        sumQty = sum(checkQty)
+        intOrderQty = int(order_quantity)
+        qtyFinal = 0
+        if(sumQty > intOrderQty) : 
+            #barang kurang
+            from_detail = warehousePlace
+            to_detail = 'china retail'
+            qtyFinal = sumQty-intOrderQty
+        elif(sumQty == int(order_quantity)) : 
+            None
+        else : 
+            #barang nambah
+            from_detail = 'china retail'
+            to_detail = warehousePlace
+            qtyFinal = intOrderQty - sumQty
+
+        newTransferInfo = TransferInfo(
+                from_detail=from_detail,
+                to_detail=to_detail,
+                order_item=item,
+                order_quantity=qtyFinal,
+                volume=item.volume,
+                weight=item.weight,
+                description="automated"
+            )
+        newTransferInfo.save()
+
         messages.info(
                 request, f'Adding Item with ID is successful!')
         return redirect('/warehouse/items')
