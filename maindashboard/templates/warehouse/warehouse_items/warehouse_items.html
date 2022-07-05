@@ -138,7 +138,12 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
 
-
-
+{% block script %}
+<script>
+    $(document).ready( function () {
+        $('#mainTables').DataTable();
+    } );
+</script>
 {% endblock %}

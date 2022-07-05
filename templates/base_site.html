@@ -52,7 +52,7 @@
 
     <!-- JS for modal -->
     <script>
-      if (typeof messages !== 'undefined'){
+      if (document.getElementById('modal') !== null){
         var myModal = new bootstrap.Modal(document.getElementById('modal'), {})
         myModal.toggle()
       }

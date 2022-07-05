@@ -65,7 +65,7 @@
 
         {% if items %}
         <div style="overflow-x: auto;" class="p-3 mb-5">
-            <table class="table table-hover table-bordered shadow" style="width: 2000px" id="dataTable">
+            <table class="table table-hover table-bordered shadow" style="width: 2000px" id="mainTable">
                 <thead>
                     <tr>
                         <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
@@ -174,7 +174,7 @@
 {% block script %}
 <script>
     $(document).ready( function () {
-        $('#dataTable').DataTable();
+        $('#mainTable').DataTable();
     } );
 </script>
 {% endblock %}
