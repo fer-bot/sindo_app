@@ -1,0 +1,131 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item"><a href="{% url 'containers' %}">Containers</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'containers_view' container.id %}">View</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Add Item</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Add Item to Container </h3>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+
+        <div class="card shadow mb-5" style="width: 600px;">
+        <div class="card-body">
+
+            <form action="{% url 'containers_add_item' container.id %}" method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="orderItem" class="form-label">Marking*</label>
+                    <select class="form-control selectpicker" id="orderItem" name="orderItem" data-live-search="true">
+                        <option disabled selected>Select Item</option>
+                        {% for order in orders %}
+                            <option data-tokens="{{order.product_name}}" value="{{order.warehousing_number}}"> {{order.warehousing_number}}. {{order.product_name}}  </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity*</label>
+                    <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="volume" class="form-label">Volume*</label>
+                    <input type="number" min="0" class="form-control" id="volume" name="volume" step=any required>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Weight*</label>
+                    <input type="number" min="0" class="form-control" id="weight" name="weight" step=any required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price*</label>
+                    <input type="number" min="0" class="form-control" id="price" name="price" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="turnover" class="form-label">Turnover*</label>
+                    <input type="number" min="0" class="form-control" id="turnover" name="turnover" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" name="description"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+        </div>
+
+        {% if orders %}
+        <div style="overflow-x: auto;" class="p-3">
+            <table class="table table-hover table-bordered border" id="mainTables" style="width: 2000px">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
+                        <th scope="col" style="width: 100px" class="text-center">quantity</th>
+                        <th scope="col" style="width: 150px" class="text-center">entry date</th>
+                        <th scope="col" style="width: 200px" class="text-center">delivery party</th>
+                        <th scope="col" style="width: 200px" class="text-center">marking</th>
+                        <th scope="col" style="width: 600px" class="text-center">product name</th>
+                        <th scope="col" style="width: 100px" class="text-center">location</th>
+                        <th scope="col" style="width: 150px" class="text-center">volume</th>
+                        <th scope="col" style="width: 150px" class="text-center">weight</th>
+                        <th scope="col" style="width: 100px" class="text-center">image</th>
+                        <th scope="col" style="width: 300px" class="text-center">description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                        <th scope="row">{{ order.warehousing_number }}</th>
+                        <td>{{ order.gz_qty }} {{order.quantity_unit}}</td>
+                        <td>{{ order.entry_date }}</td>
+                        <td>{{ order.delivery_party.name }}</td>
+                        <td>{{ order.marking.name }}</td>
+                        <td>{{ order.product_name }}</td>
+                        <td> guangzhou warehouse </td>
+                        <td>{% if order.volume %} 
+                            {{ order.volume }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.weight %} 
+                            {{ order.weight }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>
+                            {% if order.product_img %} 
+                            <img class="img-thumbnail" src="/media/{{ order.product_img }}" alt="no img"/>
+                            {% else %} - {% endif %}
+                        </td>
+                        <td>{% if order.description %} 
+                            {{ order.description }}
+                            {% else %} - {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No orders are available.</p>
+        {% endif %}
+
+</div>
+
+{% endblock %}

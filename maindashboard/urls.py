@@ -52,5 +52,7 @@ urlpatterns = [
          containers.container_edit_details, name='containers_edit_details'),
     path('stuffing/containers/edit/<int:container_id>/item/<int:item_id>',
          containers.container_edit_item, name='containers_edit_item'),
+    path('stuffing/containers/edit/<int:container_id>/add_item',
+         containers.container_add_item, name='containers_add_item'),
 
 ]

@@ -220,3 +220,67 @@ def container_edit_item(request, container_id, item_id):
             messages.info(
                 request, f'Edit to item detail with container id {container_id} and item id {item_id} is Unsuccessful! Please try again')
             return redirect(f'/stuffing/containers/edit/{container_id}/item/{item_id}')
+
+
+def container_add_item(request, container_id):
+    if request.method == 'GET':
+        container = get_object_or_404(TransferLogisticDetail, pk=container_id)
+
+        transfer_to_gz = TransferInfo.objects.filter(
+            order_item=OuterRef("pk")).filter(to_detail="guangzhou warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+        transfer_from_gz = TransferInfo.objects.filter(
+            order_item=OuterRef("pk")).filter(from_detail="guangzhou warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+
+        item_in_container = TransferInfo.objects.filter(
+            to_detail=f"container-{container_id}").values("order_item").distinct()
+
+        orders = OrderItem.objects.all().filter(verified_at__isnull=False).annotate(
+            gz_qty=Coalesce(Subquery(transfer_to_gz.values("total_box")), 0) -
+            Coalesce(Subquery(transfer_from_gz.values("total_box")), 0)
+        ).exclude(gz_qty=0).exclude(warehousing_number__in=item_in_container).order_by('entry_date')
+
+        context = {
+            'container': container,
+            'orders': orders
+        }
+        template = loader.get_template(
+            'stuffing/containers/containers_add_item.html')
+        return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        try:
+            container = get_object_or_404(
+                TransferLogisticDetail, pk=container_id)
+            order = get_object_or_404(OrderItem, pk=request.POST["orderItem"])
+            weight = float(request.POST["weight"])
+            volume = float(request.POST["volume"])
+            qty = int(request.POST["quantity"])
+            price = int(request.POST["price"])
+            turnover = int(request.POST["turnover"])
+            desc = request.POST["description"]
+
+            transfer = TransferInfo(
+                from_detail='guangzhou warehouse',
+                to_detail=f"container-{container_id}",
+                order_item=order,
+                order_quantity=qty,
+                volume=volume,
+                weight=weight,
+                description=desc,
+                transfer_logistic_detail=container,
+            )
+            transfer.save()
+
+            transfer_money_detail = TransferMoneyDetail(
+                transfer_info=transfer,
+                price=price,
+                turnover=turnover
+            )
+            transfer_money_detail.save()
+
+            messages.info(
+                request, f'Adding item detail is Successful! Please try again')
+            return redirect(f'/stuffing/containers/view/{container_id}')
+        except:
+            messages.info(
+                request, f'Adding item detail is Unsuccessful! Please try again')
+            return redirect(f'/stuffing/containers/edit/{container_id}/add_item')
