@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
@@ -46,3 +46,9 @@ def login_page(request):
             messages.info(
                 request, f'Login failed! please recheck your username and passwords!')
             return redirect('/login')
+
+
+def logout_page(request):
+    if request.method == 'GET':
+        logout(request)
+        return redirect('/')

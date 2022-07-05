@@ -10,7 +10,7 @@ from maindashboard.views.main.user_permissions import permissions
 from django.contrib.auth.decorators import user_passes_test
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser, login_url='/login')
 def users(request):
     if request.method == 'GET':
         User = get_user_model()
@@ -34,7 +34,7 @@ def users(request):
         return HttpResponse(template.render(context, request))
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser, login_url='/login')
 def users_new(request):
     if request.method == 'GET':
         template = loader.get_template('admin/users/users_new.html')
@@ -63,7 +63,7 @@ def users_new(request):
             return redirect('/admin/users/new')
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser, login_url='/login')
 def users_edit(request, username):
     if request.method == 'GET':
         user = get_object_or_404(User, username=username)

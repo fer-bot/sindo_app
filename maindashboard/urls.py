@@ -15,6 +15,8 @@ urlpatterns = [
          main.login_page, name="login"),
     path('dashboard',
          main.dashboard, name='dashboard'),
+    path('logout',
+         main.logout_page, name="logout"),
 
     path('warehouse/delivery_party',
          delivery_party.delivery_party, name='delivery_party'),
