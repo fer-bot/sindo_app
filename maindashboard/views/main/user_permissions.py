@@ -1,11 +1,11 @@
 class Permissions:
     def __init__(self):
-        self.WAREHOUSE_DELIVERYPARTY = 'warehouse.delivery_party'
-        self.WAREHOUSE_MARKING = 'warehouse.marking'
-        self.WAREHOUSE_ITEMS = 'warehouse.items'
-        self.WAREHOUSE_VERIFY = 'warehouse.verify'
+        self.WAREHOUSE_DELIVERYPARTY = 'warehouse_deliveryParty'
+        self.WAREHOUSE_MARKING = 'warehouse_marking'
+        self.WAREHOUSE_ITEMS = 'warehouse_items'
+        self.WAREHOUSE_VERIFY = 'warehouse_verify'
 
-        self.STUFFING_CONTAINER = 'stuffing.container'
+        self.STUFFING_CONTAINER = 'stuffing_container'
 
         self.permission_list = [
             self.WAREHOUSE_DELIVERYPARTY,
