@@ -5,7 +5,7 @@ from django.template import loader
 from django.db.models import OuterRef, Subquery, Sum, FloatField, ExpressionWrapper, Q, F
 from django.db.models.functions import Coalesce
 
-from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail
+from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail, TransferMoneyDetail
 
 
 def containers(request):
@@ -26,11 +26,23 @@ def containers_view(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
 
+        subq_money_detail = TransferMoneyDetail.objects.filter(transfer_info=OuterRef("id")).values("transfer_info").annotate(
+            total_price=Sum('price'),
+            total_turnover=Sum('turnover'),
+        )
+
         items_to_container = TransferInfo.objects.filter(
             order_item=OuterRef("order_item")).filter(to_detail=f"container-{container_id}").values("order_item").annotate(
-            total_box=Sum('order_quantity'),
-            total_volume=Sum('volume', output_field=FloatField()),
-            total_weight=Sum('weight', output_field=FloatField())
+                price=Coalesce(
+                    Subquery(subq_money_detail.values("total_price")), 0),
+                turnover=Coalesce(
+                    Subquery(subq_money_detail.values("total_turnover")), 0)
+        ).annotate(
+                total_box=Sum('order_quantity'),
+                total_volume=Sum('volume', output_field=FloatField()),
+                total_weight=Sum('weight', output_field=FloatField()),
+                total_price=Sum('price'),
+                total_turnover=Sum('turnover')
         )
         items_from_container = TransferInfo.objects.filter(
             order_item=OuterRef("order_item"), from_detail=f"container-{container_id}").values("order_item").annotate(
@@ -47,18 +59,28 @@ def containers_view(request, container_id):
                     "total_volume")), 0) - Coalesce(Subquery(items_from_container.values("total_volume")), 0), output_field=FloatField()),
                 weight=ExpressionWrapper(Coalesce(Subquery(items_to_container.values(
                     "total_weight")), 0) - Coalesce(Subquery(items_from_container.values("total_weight")), 0), output_field=FloatField()),
+                price=Coalesce(
+                    Subquery(items_to_container.values("total_price")), 0),
+                turnover=Coalesce(
+                    Subquery(items_to_container.values("total_turnover")), 0),
         ).order_by('order_item')
 
         total_box = 0
         total_vol = 0
         total_weight = 0
+        total_price = 0
+        total_turnover = 0
 
         for item in items:
             total_box += item["quantity"]
             total_vol += item["volume"]
             total_weight += item["weight"]
+            total_price += item["price"]
+            total_turnover += item["turnover"]
 
             item['item'] = OrderItem.objects.get(pk=item['order_item'])
+            item['price'] = 'Rp {:,.0f}'.format(item['price'])
+            item['turnover'] = 'Rp {:,.0f}'.format(item['turnover'])
             item['transfers'] = TransferInfo.objects.filter(
                 Q(to_detail=f"container-{container_id}") | Q(
                     to_detail=f"container-{container_id}"),
@@ -70,6 +92,8 @@ def containers_view(request, container_id):
             'total_box': total_box,
             'total_volume': total_vol,
             'total_weight': total_weight,
+            'total_price': 'Rp {:,.0f}'.format(total_price),
+            'total_turnover': 'Rp {:,.0f}'.format(total_turnover),
         }
         template = loader.get_template(
             'stuffing/containers/containers_view.html')

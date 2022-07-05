@@ -60,6 +60,8 @@
             <p class="p-0 m-0"><strong>Total Box: </strong> {{ total_box }}</p>
             <p class="p-0 m-0"><strong>Total Volume: </strong> {{ total_volume }}</p>
             <p class="p-0 m-0"><strong>Total Weight: </strong> {{ total_weight }}</p>
+            <p class="p-0 m-0"><strong>Total Price: </strong> {{ total_price }}</p>
+            <p class="p-0 m-0"><strong>Total Turnover: </strong> {{ total_turnover }}</p>
         </div>
         </div>
 
@@ -76,6 +78,8 @@
                         <th scope="col" style="width: 600px" class="text-center">product name</th>
                         <th scope="col" style="width: 150px" class="text-center">volume</th>
                         <th scope="col" style="width: 150px" class="text-center">weight</th>
+                        <th scope="col" style="width: 150px" class="text-center">price</th>
+                        <th scope="col" style="width: 150px" class="text-center">turnover</th>
                         <th scope="col" style="width: 100px" class="text-center">image</th>
                         <th scope="col" style="width: 100px" class="text-center">action</th>
                     </tr>
@@ -91,6 +95,8 @@
                         <td>{{ item.item.product_name }}</td>
                         <td>{{ item.volume }}</td>
                         <td>{{ item.weight }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.turnover }}</td>
                         <td>
                             {% if item.item.product_img %} 
                             <img class="img-thumbnail" src="/media/{{ item.item.product_img }}" alt="no img"/>
@@ -133,6 +139,9 @@
                 <p class="p-0 m-0"><strong>Volume: </strong> {{ item.volume }}</p>
                 <p class="p-0 m-0"><strong>Weight: </strong> {{ item.weight }}</p>
                 <p class="p-0 m-0"><strong>quantity: </strong> {{ item.quantity }} {{ item.item.quantity_unit }}</p>
+                <p class="p-0 m-0"><strong>Price: </strong> {{ item.price }}</p>
+                <p class="p-0 m-0"><strong>Turnover: </strong> {{ item.turnover }}</p>
+
             </div>
             <p class="lead"> Descriptions </p>
             <div class="modal-body table-responsive">
