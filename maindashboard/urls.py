@@ -34,6 +34,8 @@ urlpatterns = [
          items.warehouse_items_new, name='warehouse_items_new'),
     path('warehouse/items/edit/<int:item_id>',
          items.warehouse_items_edit, name="warehouse_items_edit"),
+    path('warehouse/items/move/<int:item_id>',
+         items.warehouse_items_move, name='warehouse_items_move'),
 
     path('warehouse/verify',
          verify.verify, name='verify'),

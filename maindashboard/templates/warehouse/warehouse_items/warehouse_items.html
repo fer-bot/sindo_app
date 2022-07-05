@@ -84,6 +84,7 @@
                             {% else %}
                                 <a class="btn btn-sm btn-success disabled"> edit </a>
                             {% endif %}
+                                <a class="btn btn-sm btn-warning" href="{% url 'warehouse_items_move' order.warehousing_number %}"> move GZ </a>
                         </td>
                         </tr>
                     {% endif %}

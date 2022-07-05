@@ -57,7 +57,7 @@ def warehouse_items_new(request):
                 pk=request.POST["deliveryParty"])
             marking = Marking.objects.get(pk=request.POST["marking"])
             product_name = request.POST["productName"]
-            product_img = request.FILES["productImage"]
+            product_img = request.FILES.get("productImage", None)
             entry_date = request.POST["entryDate"]
             volume = request.POST["volume"]
             weight = request.POST["weight"]
@@ -175,3 +175,32 @@ def warehouse_items_edit(request, item_id):
             messages.info(
                 request, f'Failed! Please re-check the starred input and try again!')
             return redirect(f'/warehouse/items/edit/{item_id}?location={location}')
+
+
+def warehouse_items_move(request, item_id):
+    if request.method == 'GET':
+        try:
+            order = get_object_or_404(OrderItem, pk=item_id)
+            transfer_to_sz = TransferInfo.objects.filter(
+                order_item=item_id).filter(to_detail="shenzhen warehouse").aggregate(total_box=Coalesce(Sum('order_quantity'), 0))
+            transfer_from_sz = TransferInfo.objects.filter(
+                order_item=item_id).filter(from_detail="shenzhen warehouse").values("order_item").aggregate(total_box=Coalesce(Sum('order_quantity'), 0))
+
+            transfer = TransferInfo(
+                from_detail='shenzhen warehouse',
+                to_detail='guangzhou warehouse',
+                order_item=order,
+                order_quantity=transfer_to_sz['total_box'] -
+                transfer_from_sz['total_box'],
+                volume=order.volume,
+                weight=order.weight,
+                description="automated, moved from shenzhen warehouse to guangzhou warehouse",
+            )
+            transfer.save()
+            messages.info(
+                request, f'Moving item {item_id} from shenzhen to guangzhou successful!')
+            return redirect('/warehouse/items')
+        except:
+            messages.info(
+                request, f'Moving item {item_id} from shenzhen to guangzhou unsuccessful! Please try again.')
+            return redirect('/warehouse/items')
