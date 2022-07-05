@@ -1,7 +1,6 @@
 {% extends "base_site.html" %}
 
 {% block content %}
-<!-- {% include "header_basic.html" %} -->
 
 <div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
 
@@ -12,21 +11,18 @@
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
               <li class="breadcrumb-item">Warehouse</li>
-              <li class="breadcrumb-item active" aria-current="page">List of Items</li>
+              <li class="breadcrumb-item active" aria-current="page">Verify Item</li>
             </ol>
         </nav>
         <div style="display: flex; justify-content: space-between;">
-            <h3 class="p-1"> List of Items </h3>
-            <div class="btn-group btn-group-sm m-2" role="group">
-                <a type="button" class="btn btn-success" href="{% url 'warehouse_items_new' %}">+ New</a>
-            </div>
+            <h3 class="p-1"> Verify Item </h3>
         </div>
         <div class="border-top m-0 mb-3"></div>
 
     
         {% if orders %}
         <div style="overflow-x: auto;" class="p-3">
-            <table class="table table-hover table-bordered" style="width: 2000px">
+            <table class="table table-hover table-bordered border" id="mainTables" style="width: 2000px">
                 <thead>
                     <tr>
                         <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
@@ -80,12 +76,9 @@
                             {% endif %}
                         </td>
                         <td> 
-                            <!-- <a class="btn btn-sm btn-primary"> view </a> -->
+                            <a class="btn btn-sm btn-success" href="{% url 'verify_edit' order.warehousing_number %}?location=shenzhen warehouse"> edit </a>
                             {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-success" href="{% url 'warehouse_items_edit' order.warehousing_number %}"> edit </a>
-                                <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
-                            {% else %}
-                                <a class="btn btn-sm btn-success disabled"> edit </a>
+                                <a class="btn btn-sm btn-primary"  href="{% url 'verify_item' order.warehousing_number %}"> verify </a>
                             {% endif %}
                         </td>
                         </tr>
@@ -124,12 +117,9 @@
                             {% endif %}
                         </td>
                         <td> 
-                            <!-- <a class="btn btn-sm btn-primary"> view </a> -->
+                            <a class="btn btn-sm btn-success"  href="{% url 'verify_edit' order.warehousing_number %}?location=guangzhou warehouse"> edit </a>
                             {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-success"  href="{% url 'warehouse_items_edit' order.warehousing_number %}"> edit </a>
-                                <!-- <a class="btn btn-sm btn-danger"> delete </a>  -->
-                            {% else %}
-                                <a class="btn btn-sm btn-success disabled"> edit </a>
+                                <a class="btn btn-sm btn-primary"  href="{% url 'verify_item' order.warehousing_number %}"> verify </a>
                             {% endif %}
                         </td>
                         </tr>
@@ -141,7 +131,6 @@
         {% else %}
             <p>No orders are available.</p>
         {% endif %}
-
     </div>
 </div>
 
