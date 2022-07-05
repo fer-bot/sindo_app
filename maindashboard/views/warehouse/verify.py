@@ -1,4 +1,4 @@
-from itertools import product
+from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
@@ -11,7 +11,7 @@ from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo
 from maindashboard.views.warehouse.marking import marking
 
 
-def warehouse_items(request):
+def verify(request):
     if request.method == 'GET':
 
         transfer_to_sz = TransferInfo.objects.filter(
@@ -35,71 +35,22 @@ def warehouse_items(request):
             'orders': orders,
         }
         template = loader.get_template(
-            'warehouse/warehouse_items/warehouse_items.html')
+            'warehouse/verify/verify_items.html')
         return HttpResponse(template.render(context, request))
 
 
-def warehouse_items_new(request):
+def verify_item(request, item_id):
     if request.method == 'GET':
-        delivery_parties = DeliveryParty.objects.order_by('name')
-        markings = Marking.objects.order_by('name')
-        context = {
-            "delivery_parties": delivery_parties,
-            "markings": markings,
-        }
-        template = loader.get_template(
-            'warehouse/warehouse_items/warehouse_items_new.html')
-        return HttpResponse(template.render(context, request))
-    if request.method == 'POST':
-        try:
-            quantity_unit = request.POST["quantityUnit"]
-            delivery_party = DeliveryParty.objects.get(
-                pk=request.POST["deliveryParty"])
-            marking = Marking.objects.get(pk=request.POST["marking"])
-            product_name = request.POST["productName"]
-            product_img = request.FILES["productImage"]
-            entry_date = request.POST["entryDate"]
-            volume = request.POST["volume"]
-            weight = request.POST["weight"]
-            description = request.POST["description"]
-            from_detail = "china retail"
-            to_detail = request.POST["warehouse"]
-            order_quantity = request.POST["quantity"]
+        item = get_object_or_404(OrderItem, pk=item_id)
+        item.verified_at = datetime.now()
+        item.save()
 
-            newItem = OrderItem(
-                quantity_unit=quantity_unit,
-                delivery_party=delivery_party,
-                marking=marking,
-                product_name=product_name,
-                product_img=product_img,
-                entry_date=entry_date,
-                volume=volume,
-                weight=weight,
-                description=description,
-            )
-            newItem.save()
-
-            newTransferInfo = TransferInfo(
-                from_detail=from_detail,
-                to_detail=to_detail,
-                order_item=newItem,
-                order_quantity=order_quantity,
-                volume=volume,
-                weight=weight,
-                description="automated"
-            )
-            newTransferInfo.save()
-            messages.info(
-                request, f'Adding Item with ID {newItem.warehousing_number} and name {product_name} is successful!')
-            return redirect('/warehouse/items')
-
-        except:
-            messages.info(
-                request, f'Failed! Please re-check the starred input and try again!')
-            return redirect('/warehouse/items/new')
+        messages.info(
+            request, f'Verifying  Item with ID with ID {item.warehousing_number} and name {item.product_name} is successful!')
+        return redirect('/warehouse/verify')
 
 
-def warehouse_items_edit(request, item_id):
+def verify_edit(request, item_id):
     if request.method == 'GET':
         item = get_object_or_404(OrderItem, pk=item_id)
         item.entry_date = item.entry_date.strftime("%Y-%m-%d")
@@ -125,8 +76,9 @@ def warehouse_items_edit(request, item_id):
             'location': location
         }
         template = loader.get_template(
-            'warehouse/warehouse_items/warehouse_items_edit.html')
+            'warehouse/verify/verify_edit.html')
         return HttpResponse(template.render(context, request))
+
     if request.method == 'POST':
         location = request.GET.get('location', '')
         if location not in ('shenzhen warehouse', 'guangzhou warehouse'):
@@ -170,8 +122,8 @@ def warehouse_items_edit(request, item_id):
 
             messages.info(
                 request, f'Successfully changing the details')
-            return redirect('/warehouse/items')
+            return redirect('/warehouse/verify')
         except:
             messages.info(
                 request, f'Failed! Please re-check the starred input and try again!')
-            return redirect(f'/warehouse/items/edit/{item_id}?location={location}')
+            return redirect(f'/warehouse/verify/edit/{item_id}?location={location}')

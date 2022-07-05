@@ -1,7 +1,6 @@
 {% extends "base_site.html" %}
 
 {% block content %}
-<!-- {% include "header_basic.html" %} -->
 
 <div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
 
@@ -12,7 +11,7 @@
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
               <li class="breadcrumb-item">Warehouse</li>
-              <li class="breadcrumb-item"><a href="{% url 'warehouse_items' %}">List of Items</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'verify' %}">Verify Item</a></li>
               <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
         </nav>
