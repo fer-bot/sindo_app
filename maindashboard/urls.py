@@ -49,10 +49,12 @@ urlpatterns = [
     path('stuffing/containers/view/<int:container_id>',
          containers.containers_view, name='containers_view'),
     path('stuffing/containers/edit/<int:container_id>/details',
-         containers.container_edit_details, name='containers_edit_details'),
+         containers.containers_edit_details, name='containers_edit_details'),
     path('stuffing/containers/edit/<int:container_id>/item/<int:item_id>',
-         containers.container_edit_item, name='containers_edit_item'),
+         containers.containers_edit_item, name='containers_edit_item'),
     path('stuffing/containers/edit/<int:container_id>/add_item',
-         containers.container_add_item, name='containers_add_item'),
+         containers.containers_add_item, name='containers_add_item'),
+    path('stuffing/containers/new',
+         containers.containers_new, name='containers_new'),
 
 ]

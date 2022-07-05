@@ -11,8 +11,7 @@ from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo
 def containers(request):
     if request.method == 'GET':
 
-        containers = TransferLogisticDetail.objects.filter(
-            shipped_at__isnull=True).order_by("cabinet_time")
+        containers = TransferLogisticDetail.objects.order_by("cabinet_time")
         context = {
             'orders': [],
             'containers': containers,
@@ -98,7 +97,7 @@ def containers_view(request, container_id):
         return HttpResponse(template.render(context, request))
 
 
-def container_edit_details(request, container_id):
+def containers_edit_details(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
         container.cabinet_time = container.cabinet_time.strftime(
@@ -138,7 +137,7 @@ def container_edit_details(request, container_id):
             return redirect(f'/stuffing/containers/edit/{container_id}/details')
 
 
-def container_edit_item(request, container_id, item_id):
+def containers_edit_item(request, container_id, item_id):
     if request.method == 'GET':
         transfer_info = TransferInfo.objects.filter(
             Q(to_detail=f"container-{container_id}") | Q(to_detail=f"container-{container_id}"), order_item=item_id)
@@ -222,7 +221,7 @@ def container_edit_item(request, container_id, item_id):
             return redirect(f'/stuffing/containers/edit/{container_id}/item/{item_id}')
 
 
-def container_add_item(request, container_id):
+def containers_add_item(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
 
@@ -284,3 +283,35 @@ def container_add_item(request, container_id):
             messages.info(
                 request, f'Adding item detail is Unsuccessful! Please try again')
             return redirect(f'/stuffing/containers/edit/{container_id}/add_item')
+
+
+def containers_new(request):
+    if request.method == 'GET':
+        context = {}
+        template = loader.get_template(
+            'stuffing/containers/containers_new.html')
+        return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        try:
+            container = TransferLogisticDetail(
+                cabinet_time=request.POST["cabinetTime"],
+                loading_location=request.POST["loadingLocation"],
+                booking_number=request.POST["bookingNumber"],
+                cabinet_number=request.POST["cabinetNumber"],
+                title=request.POST["title"],
+                cabinet_weight=request.POST["cabinetWeight"],
+                cabinet_type=request.POST["cabinetType"],
+                license_plate=request.POST["licensePlate"],
+                driver_name=request.POST['driverName'],
+                driver_phone=request.POST['driverPhone'],
+                description=request.POST["description"],
+            )
+            container.save()
+            messages.info(
+                request, f'Adding new container detail with ID {container.id} is successful!')
+            return redirect(f'/stuffing/containers/view/{container.id}')
+
+        except:
+            messages.info(
+                request, f'Adding new container is Unsuccessful! Please try again')
+            return redirect(f'/stuffing/containers/new')
