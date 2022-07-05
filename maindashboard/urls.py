@@ -59,4 +59,11 @@ urlpatterns = [
     path('stuffing/containers/new',
          containers.containers_new, name='containers_new'),
 
+    path('warehouse/verify',
+         verify.verify, name='verify'),
+    path('warehouse/verify/item/<int:item_id>',
+         verify.verify_item, name="verify_item"),
+    path('warehouse/verify/edit/<int:item_id>',
+         verify.verify_edit, name="verify_edit"),
+
 ]

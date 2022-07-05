@@ -204,3 +204,4 @@ def warehouse_items_move(request, item_id):
             messages.info(
                 request, f'Moving item {item_id} from shenzhen to guangzhou unsuccessful! Please try again.')
             return redirect('/warehouse/items')
+            
