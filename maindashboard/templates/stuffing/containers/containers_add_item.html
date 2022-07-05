@@ -10,16 +10,68 @@
 
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item">Warehouse</li>
-              <li class="breadcrumb-item active" aria-current="page">Verify Item</li>
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item"><a href="{% url 'containers' %}">Containers</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'containers_view' container.id %}">View</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Add Item</li>
             </ol>
         </nav>
         <div style="display: flex; justify-content: space-between;">
-            <h3 class="p-1"> Verify Item </h3>
+            <h3 class="p-1"> Add Item to Container </h3>
         </div>
         <div class="border-top m-0 mb-3"></div>
 
+
+        <div class="card shadow mb-5" style="width: 600px;">
+        <div class="card-body">
+
+            <form action="{% url 'containers_add_item' container.id %}" method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="orderItem" class="form-label">Marking*</label>
+                    <select class="form-control selectpicker" id="orderItem" name="orderItem" data-live-search="true">
+                        <option disabled selected>Select Item</option>
+                        {% for order in orders %}
+                            <option data-tokens="{{order.product_name}}" value="{{order.warehousing_number}}"> {{order.warehousing_number}}. {{order.product_name}}  </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity*</label>
+                    <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="volume" class="form-label">Volume*</label>
+                    <input type="number" min="0" class="form-control" id="volume" name="volume" step=any required>
+                </div>
     
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Weight*</label>
+                    <input type="number" min="0" class="form-control" id="weight" name="weight" step=any required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price*</label>
+                    <input type="number" min="0" class="form-control" id="price" name="price" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="turnover" class="form-label">Turnover*</label>
+                    <input type="number" min="0" class="form-control" id="turnover" name="turnover" step="1" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" name="description"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+        </div>
+
         {% if orders %}
         <div style="overflow-x: auto;" class="p-3">
             <table class="table table-hover table-bordered border" id="mainTables" style="width: 2000px">
@@ -36,54 +88,10 @@
                         <th scope="col" style="width: 150px" class="text-center">weight</th>
                         <th scope="col" style="width: 100px" class="text-center">image</th>
                         <th scope="col" style="width: 300px" class="text-center">description</th>
-                        <th scope="col" style="width: 100px" class="text-center">verified</th>
-                        <th scope="col" style="width: 100px" class="text-center">action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
-                    {% if order.sz_qty %}
-                        <tr>
-                        <th scope="row">{{ order.warehousing_number }}</th>
-                        <td>{{ order.sz_qty }} {{order.quantity_unit}}</td>
-                        <td>{{ order.entry_date }}</td>
-                        <td>{{ order.delivery_party.name }}</td>
-                        <td>{{ order.marking.name }}</td>
-                        <td>{{ order.product_name }}</td>
-                        <td> shenzhen warehouse </td>
-                        <td>{% if order.volume %} 
-                            {{ order.volume }}
-                            {% else %} - {% endif %}
-                        </td>
-                        <td>{% if order.weight %} 
-                            {{ order.weight }}
-                            {% else %} - {% endif %}
-                        </td>
-                        <td>
-                            {% if order.product_img %} 
-                            <img class="img-thumbnail" src="/media/{{ order.product_img }}" alt="no img"/>
-                            {% else %} - {% endif %}
-                        </td>
-                        <td>{% if order.description %} 
-                            {{ order.description }}
-                            {% else %} - {% endif %}
-                        </td>
-                        <td class="text-center"> 
-                            {% if order.verified_at %} 
-                            <span class="badge rounded-pill text-bg-success">✓</span>
-                            {% else %} 
-                            <span class="badge rounded-pill text-bg-danger">✘</span>
-                            {% endif %}
-                        </td>
-                        <td> 
-                            <a class="btn btn-sm btn-success" href="{% url 'verify_edit' order.warehousing_number %}?location=shenzhen warehouse"> edit </a>
-                            {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-primary"  href="{% url 'verify_item' order.warehousing_number %}"> verify </a>
-                            {% endif %}
-                        </td>
-                        </tr>
-                    {% endif %}
-                    {% if order.gz_qty %}
                         <tr>
                         <th scope="row">{{ order.warehousing_number }}</th>
                         <td>{{ order.gz_qty }} {{order.quantity_unit}}</td>
@@ -109,21 +117,7 @@
                             {{ order.description }}
                             {% else %} - {% endif %}
                         </td>
-                        <td class="text-center"> 
-                            {% if order.verified_at %} 
-                            <span class="badge rounded-pill text-bg-success">✓</span>
-                            {% else %} 
-                            <span class="badge rounded-pill text-bg-danger">✘</span>
-                            {% endif %}
-                        </td>
-                        <td> 
-                            <a class="btn btn-sm btn-success"  href="{% url 'verify_edit' order.warehousing_number %}?location=guangzhou warehouse"> edit </a>
-                            {% if not order.verified_at %} 
-                                <a class="btn btn-sm btn-primary"  href="{% url 'verify_item' order.warehousing_number %}"> verify </a>
-                            {% endif %}
-                        </td>
                         </tr>
-                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -131,8 +125,9 @@
         {% else %}
             <p>No orders are available.</p>
         {% endif %}
-    </div>
+
 </div>
+
 {% endblock %}
 
 {% block script %}

@@ -1,0 +1,99 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item active" aria-current="page">Containers</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> List of Containers </h3>
+            <div class="btn-group btn-group-sm m-2" role="group">
+                <a type="button" class="btn btn-success" href="{% url 'containers_new' %}">+ New</a>
+            </div>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+    
+        {% if containers %}
+        <div style="overflow-x: auto;" class="p-3">
+            <table class="table table-hover table-bordered border" id="mainTables" style="width: 2100px">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 40px" class="text-center">id</th>
+                        <th scope="col" style="width: 250px" class="text-center">cabinet time</th>
+                        <th scope="col" style="width: 200px" class="text-center">loading location</th>
+                        <th scope="col" style="width: 180px" class="text-center">booking number</th>
+                        <th scope="col" style="width: 150px" class="text-center">cabinet number</th>
+                        <th scope="col" style="width: 200px" class="text-center">title</th>
+                        <th scope="col" style="width: 150px" class="text-center">cabinet weight</th>
+                        <th scope="col" style="width: 150px" class="text-center">cabinet type</th>
+                        <th scope="col" style="width: 150px" class="text-center">liscense plate</th>
+                        <th scope="col" style="width: 200px" class="text-center">driver name</th>
+                        <th scope="col" style="width: 120px" class="text-center">driver phone</th>
+                        <th scope="col" style="width: 50px" class="text-center">status</th>
+                        <th scope="col" style="width: 300px" class="text-center">description</th>
+                        <th scope="col" style="width: 100px" class="text-center">action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for container in containers %}
+                        <tr>
+                        <th scope="row">{{ container.id }}</th>
+                        <td>{{ container.cabinet_time}}</td>
+                        <td>{{ container.loading_location }}</td>
+                        <td>{{ container.booking_number }}</td>
+                        <td>{{ container.cabinet_number }}</td>
+                        <td>{{ container.title }}</td>
+                        <td>{{ container.cabinet_weight }} </td>
+                        <td>{{ container.cabinet_type }}</td>
+                        <td>{{ container.license_plate }}</td>
+                        <td>{{ container.driver_name }}</td>
+                        <td>{{ container.driver_phone }}</td>
+                        <td>
+                            {% if container.shipped_at %}
+                                <span class="badge rounded-pill text-bg-success">shipped</span>
+                            {% else %}
+                                <span class="badge rounded-pill text-bg-secondary">draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if container.description %} 
+                            {{ container.description }}
+                            {% else %} - {% endif %}
+                        </td>
+                        <td> 
+                            <a class="btn btn-sm btn-primary" href="{% url 'containers_view' container.id %}"> view </a>
+                            {% if not container.shipped_at %}
+                                <a class="btn btn-sm btn-warning" href="{% url 'containers_ship' container.id %}"> ship </a>
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No containers are available.</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready( function () {
+        $('#mainTables').DataTable();
+    } );
+</script>
+{% endblock %}

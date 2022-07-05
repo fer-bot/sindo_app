@@ -1,0 +1,92 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item"><a href="{% url 'containers' %}">Containers</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'containers_view' container.id %}">View</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit Details</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Edit Container Details </h3>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+
+        <div class="card shadow mb-5" style="width: 600px;">
+        <div class="card-body">
+
+            <form action="{% url 'containers_edit_details' container.id %}" method="post">
+                {% csrf_token %}
+    
+                <div class="mb-3">
+                    <label for="cabinetTime" class="form-label">Cabinet Time</label>
+                    <input type="datetime-local" class="form-control" id="cabinetTime" name="cabinetTime" value="{{container.cabinet_time}}">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="loadingLocation" class="form-label">Loading Location</label>
+                    <input type="text" class="form-control" id="loadingLocation" name="loadingLocation" required value="{{container.loading_location}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="bookingNumber" class="form-label">Booking Number</label>
+                    <input type="text" class="form-control" id="bookingNumber" name="bookingNumber" required value="{{container.booking_number}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="cabinetNumber" class="form-label">Cabinet Number</label>
+                    <input type="text" class="form-control" id="cabinetNumber" name="cabinetNumber" required value="{{container.cabinet_number}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required value="{{container.title}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="cabinetWeight" class="form-label">Cabinet Weight</label>
+                    <input type="number" min="0" class="form-control" id="cabinetWeight" name="cabinetWeight" required value="{{container.cabinet_weight}}">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="cabinetType" class="form-label">Cabinet Type</label>
+                    <input type="text" class="form-control" id="cabinetType" name="cabinetType" required value="{{container.cabinet_type}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="licensePlate" class="form-label">License Plate</label>
+                    <input type="text" class="form-control" id="licensePlate" name="licensePlate" required value="{{container.license_plate}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="driverName" class="form-label">Driver Name</label>
+                    <input type="text" class="form-control" id="driverName" name="driverName" required value="{{container.driver_name}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="driverPhone" class="form-label">Driver Phone</label>
+                    <input type="text" class="form-control" id="driverPhone" name="driverPhone" required value="{{container.driver_phone}}">
+                </div>
+    
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" name="description">{{container.description}}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+        </div>
+
+</div>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from .views.warehouse import delivery_party
 from .views.warehouse import marking
 from .views.warehouse import items
 from .views.warehouse import verify
+from .views.stuffing import containers
 
 urlpatterns = [
     path('',
@@ -33,6 +34,30 @@ urlpatterns = [
          items.warehouse_items_new, name='warehouse_items_new'),
     path('warehouse/items/edit/<int:item_id>',
          items.warehouse_items_edit, name="warehouse_items_edit"),
+    path('warehouse/items/move/<int:item_id>',
+         items.warehouse_items_move, name='warehouse_items_move'),
+
+    path('warehouse/verify',
+         verify.verify, name='verify'),
+    path('warehouse/verify/item/<int:item_id>',
+         verify.verify_item, name="verify_item"),
+    path('warehouse/verify/edit/<int:item_id>',
+         verify.verify_edit, name="verify_edit"),
+
+    path('stuffing/containers',
+         containers.containers, name='containers'),
+    path('stuffing/containers/view/<int:container_id>',
+         containers.containers_view, name='containers_view'),
+    path('stuffing/containers/ship/<int:container_id>',
+         containers.containers_ship, name='containers_ship'),
+    path('stuffing/containers/edit/<int:container_id>/details',
+         containers.containers_edit_details, name='containers_edit_details'),
+    path('stuffing/containers/edit/<int:container_id>/item/<int:item_id>',
+         containers.containers_edit_item, name='containers_edit_item'),
+    path('stuffing/containers/edit/<int:container_id>/add_item',
+         containers.containers_add_item, name='containers_add_item'),
+    path('stuffing/containers/new',
+         containers.containers_new, name='containers_new'),
 
     path('warehouse/verify',
          verify.verify, name='verify'),

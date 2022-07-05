@@ -26,7 +26,7 @@
     
         {% if markings %}
         <div style="overflow-x: auto;" class="p-3">
-            <table class="table table-hover table-bordered">
+            <table class="table table-hover table-bordered border" id="mainTables">
                 <thead>
                     <tr>
                         <th scope="col" class="text-center">Id</th>
@@ -59,7 +59,12 @@
 
     </div>
 </div>
+{% endblock %}
 
-
-
+{% block script %}
+<script>
+    $(document).ready( function () {
+        $('#mainTables').DataTable();
+    } );
+</script>
 {% endblock %}
