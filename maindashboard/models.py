@@ -56,6 +56,7 @@ class TransferLogisticDetail(models.Model):
     license_plate = models.CharField(max_length=50, null=False, blank=False)
     driver_name = models.CharField(max_length=100, null=True, blank=True)
     driver_phone = models.CharField(max_length=20, null=False, blank=False)
+    shipped_at = models.DateTimeField(null=True, blank=True)
     arrived_at = models.DateTimeField(null=True, blank=True)
 
     description = models.TextField(null=True, blank=True)

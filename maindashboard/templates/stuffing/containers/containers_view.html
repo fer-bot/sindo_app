@@ -1,7 +1,6 @@
 {% extends "base_site.html" %}
 
 {% block content %}
-<!-- {% include "header_basic.html" %} -->
 
 <div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
 
@@ -18,9 +17,6 @@
         </nav>
         <div style="display: flex; justify-content: space-between;">
             <h3 class="p-1"> View Container </h3>
-            <div class="btn-group btn-group-sm m-2" role="group">
-                <a type="button" class="btn btn-success" href="{% url 'warehouse_items_new' %}">+ New</a>
-            </div>
         </div>
         <div class="border-top m-0 mb-3"></div>
 
@@ -45,7 +41,7 @@
                 {% else %} - {% endif %}
             </p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button class="btn btn-success" type="button">Edit</button>
+                <a class="btn btn-success" type="button" href="{% url 'containers_edit_details' container.id %}">Edit</a>
             </div>
         </div>
         </div>
@@ -104,6 +100,7 @@
                         </td>
                         <td> 
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detail-{{ item.order_item }}"> view </button>
+                            <a type="button" class="btn btn-success"> edit </a>
                         </td>
                         </tr>
                     {% endfor %}
@@ -112,7 +109,7 @@
             </table>
         </div>
         {% else %}
-            <p>No orders are available.</p>
+            <p>No items are available.</p>
         {% endif %}
     </div>
 
