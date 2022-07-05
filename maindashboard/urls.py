@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import viewss
+from .views.main import main
 from .views.warehouse import delivery_party
 from .views.warehouse import marking
 from .views.warehouse import items
@@ -9,9 +9,9 @@ from .views.stuffing import containers
 
 urlpatterns = [
     path('',
-         viewss.home, name='home'),
+         main.home, name='home'),
     path('dashboard',
-         viewss.dashboard, name='dashboard'),
+         main.dashboard, name='dashboard'),
 
     path('warehouse/delivery_party',
          delivery_party.delivery_party, name='delivery_party'),
