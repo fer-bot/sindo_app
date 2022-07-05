@@ -100,7 +100,7 @@
                         </td>
                         <td> 
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detail-{{ item.order_item }}"> view </button>
-                            <a type="button" class="btn btn-success"> edit </a>
+                            <a type="button" class="btn btn-success" href="{% url 'containers_edit_item' container.id item.order_item %}"> edit </a>
                         </td>
                         </tr>
                     {% endfor %}

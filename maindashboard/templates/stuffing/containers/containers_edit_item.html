@@ -1,0 +1,72 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item"><a href="{% url 'containers' %}">Containers</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'containers_view' container_id %}">View</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit Item</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Edit Container's Item </h3>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+
+        <div class="card shadow mb-5" style="width: 600px;">
+        <div class="card-body">
+
+            <form action="{% url 'containers_edit_item' container_id item_id %}" method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="hidden" id="prevQuantity" name="prevQuantity" value="{{quantity}}">
+                    <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" value="{{quantity}}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="volume" class="form-label">Volume</label>
+                    <input type="hidden" id="prevVolume" name="prevVolume" value="{{volume}}">
+                    <input type="number" min="0" class="form-control" id="volume" name="volume" step=any required value="{{volume}}">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Weight</label>
+                    <input type="hidden" id="prevWeight" name="prevWeight" value="{{weight}}">
+                    <input type="number" min="0" class="form-control" id="weight" name="weight" step=any required value="{{weight}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="hidden" id="prevPrice" name="prevPrice" value="{{price}}">
+                    <input type="number" min="0" class="form-control" id="price" name="price" step="1" value="{{price}}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="turnover" class="form-label">Price</label>
+                    <input type="hidden" id="prevTurnover" name="prevTurnover" value="{{turnover}}">
+                    <input type="number" min="0" class="form-control" id="turnover" name="turnover" step="1" value="{{turnover}}" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" name="description"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+        </div>
+
+</div>
+
+{% endblock %}

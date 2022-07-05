@@ -32,12 +32,12 @@ def containers_view(request, container_id):
         )
 
         items_to_container = TransferInfo.objects.filter(
-            order_item=OuterRef("order_item")).filter(to_detail=f"container-{container_id}").values("order_item").annotate(
+            order_item=OuterRef("order_item")).filter(to_detail=f"container-{container_id}").annotate(
                 price=Coalesce(
                     Subquery(subq_money_detail.values("total_price")), 0),
                 turnover=Coalesce(
                     Subquery(subq_money_detail.values("total_turnover")), 0)
-        ).annotate(
+        ).values("order_item").annotate(
                 total_box=Sum('order_quantity'),
                 total_volume=Sum('volume', output_field=FloatField()),
                 total_weight=Sum('weight', output_field=FloatField()),
@@ -63,7 +63,7 @@ def containers_view(request, container_id):
                     Subquery(items_to_container.values("total_price")), 0),
                 turnover=Coalesce(
                     Subquery(items_to_container.values("total_turnover")), 0),
-        ).order_by('order_item')
+        ).distinct().order_by('order_item')
 
         total_box = 0
         total_vol = 0
@@ -82,9 +82,7 @@ def containers_view(request, container_id):
             item['price'] = 'Rp {:,.0f}'.format(item['price'])
             item['turnover'] = 'Rp {:,.0f}'.format(item['turnover'])
             item['transfers'] = TransferInfo.objects.filter(
-                Q(to_detail=f"container-{container_id}") | Q(
-                    to_detail=f"container-{container_id}"),
-                order_item=item['order_item']).order_by('created_at')
+                Q(to_detail=f"container-{container_id}") | Q(to_detail=f"container-{container_id}"), order_item=item['order_item']).order_by('-created_at')
 
         context = {
             'container': container,
@@ -138,3 +136,87 @@ def container_edit_details(request, container_id):
             messages.info(
                 request, f'Edit to container detail with id {container_id} is Unsuccessful! Please try again')
             return redirect(f'/stuffing/containers/edit/{container_id}/details')
+
+
+def container_edit_item(request, container_id, item_id):
+    if request.method == 'GET':
+        transfer_info = TransferInfo.objects.filter(
+            Q(to_detail=f"container-{container_id}") | Q(to_detail=f"container-{container_id}"), order_item=item_id)
+
+        print(transfer_info)
+
+        box, volume, weight, price, turnover = 0, 0, 0, 0, 0
+
+        for transfer in transfer_info:
+            if transfer.to_detail == f"container-{container_id}":
+                box += transfer.order_quantity
+                volume += transfer.volume
+                weight += transfer.weight
+
+                subq_money_detail = TransferMoneyDetail.objects.filter(transfer_info=transfer.id).values("transfer_info").aggregate(
+                    total_price=Sum('price'),
+                    total_turnover=Sum('turnover'),
+                )
+                price += subq_money_detail.get("total_price", 0)
+                turnover += subq_money_detail.get("total_turnover", 0)
+
+            if transfer.from_detail == f"container-{container_id}":
+                box -= transfer.order_quantity
+                volume -= transfer.volume
+                weight -= transfer.weight
+
+        context = {
+            "container_id": container_id,
+            "item_id": item_id,
+            "quantity": box,
+            "volume": volume,
+            "weight": weight,
+            "price": price,
+            "turnover": turnover,
+        }
+        template = loader.get_template(
+            'stuffing/containers/containers_edit_item.html')
+        return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        try:
+            order = get_object_or_404(OrderItem, warehousing_number=item_id)
+            container = get_object_or_404(
+                TransferLogisticDetail, pk=container_id)
+            weight = float(request.POST["weight"]) - \
+                float(request.POST["prevWeight"])
+            volume = float(request.POST["volume"]) - \
+                float(request.POST["prevVolume"])
+            qty = int(request.POST["quantity"]) - \
+                int(request.POST["prevQuantity"])
+            price = int(request.POST["price"]) - int(request.POST["prevPrice"])
+            turnover = int(request.POST["turnover"]) - \
+                int(request.POST["prevTurnover"])
+            desc = request.POST["description"]
+
+            transfer = TransferInfo(
+                from_detail='guangzhou warehouse',
+                to_detail=f"container-{container_id}",
+                order_item=order,
+                order_quantity=qty,
+                volume=volume,
+                weight=weight,
+                description=desc,
+                transfer_logistic_detail=container,
+            )
+            transfer.save()
+
+            transfer_money_detail = TransferMoneyDetail(
+                transfer_info=transfer,
+                price=price,
+                turnover=turnover
+            )
+            transfer_money_detail.save()
+
+            messages.info(
+                request, f'Edit to item detail with container id {container_id} and item id {item_id} is successful!')
+            return redirect(f'/stuffing/containers/view/{container_id}')
+
+        except:
+            messages.info(
+                request, f'Edit to item detail with container id {container_id} and item id {item_id} is Unsuccessful! Please try again')
+            return redirect(f'/stuffing/containers/edit/{container_id}/item/{item_id}')
