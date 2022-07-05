@@ -1,6 +1,7 @@
 from statistics import mode
 from django.db import models
 from django.contrib.auth.models import User
+from maindashboard.views.main.user_permissions import permissions
 
 
 class DeliveryParty(models.Model):
@@ -97,3 +98,9 @@ class TransferMoneyDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     last_updated_by = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL)
+
+
+class Permissions(models.Model):
+    class Meta:
+        default_permissions = ()
+        permissions = [(p, p) for p in permissions.permission_list]

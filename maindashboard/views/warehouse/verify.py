@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template import loader
@@ -7,10 +8,12 @@ from django.db.models import OuterRef, Subquery, Sum
 from django.db.models.functions import Coalesce
 from django.http import Http404
 
+from maindashboard.views.main.user_permissions import permissions
 from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail
-from maindashboard.views.warehouse.marking import marking
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_VERIFY).first() != None, login_url='/login')
 def verify(request):
     if request.method == 'GET':
 
@@ -39,6 +42,8 @@ def verify(request):
         return HttpResponse(template.render(context, request))
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_VERIFY).first() != None, login_url='/login')
 def verify_item(request, item_id):
     if request.method == 'GET':
         item = get_object_or_404(OrderItem, pk=item_id)
@@ -50,6 +55,8 @@ def verify_item(request, item_id):
         return redirect('/warehouse/verify')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_VERIFY).first() != None, login_url='/login')
 def verify_edit(request, item_id):
     if request.method == 'GET':
         item = get_object_or_404(OrderItem, pk=item_id)

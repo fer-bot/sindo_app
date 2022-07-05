@@ -6,10 +6,13 @@ from .views.warehouse import marking
 from .views.warehouse import items
 from .views.warehouse import verify
 from .views.stuffing import containers
+from .views.admin import users
 
 urlpatterns = [
     path('',
          main.home, name='home'),
+    path('login',
+         main.login_page, name="login"),
     path('dashboard',
          main.dashboard, name='dashboard'),
 
@@ -65,5 +68,12 @@ urlpatterns = [
          verify.verify_item, name="verify_item"),
     path('warehouse/verify/edit/<int:item_id>',
          verify.verify_edit, name="verify_edit"),
+
+    path('admin/users',
+         users.users, name="users"),
+    path('admin/users/new',
+         users.users_new, name="users_new"),
+    path('admin/users/edit/<username>',
+         users.users_edit, name="users_edit"),
 
 ]
