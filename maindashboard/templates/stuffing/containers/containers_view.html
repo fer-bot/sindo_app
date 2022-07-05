@@ -1,0 +1,180 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Stuffing</li>
+              <li class="breadcrumb-item"><a href="{% url 'containers' %}">Containers</a></li>
+              <li class="breadcrumb-item active" aria-current="page">View</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> View Container </h3>
+            <div class="btn-group btn-group-sm m-2" role="group">
+                <a type="button" class="btn btn-success" href="{% url 'warehouse_items_new' %}">+ New</a>
+            </div>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+        <p class="lead"> Details </p>
+
+        <div class="card shadow mb-5" style="width: 450px;">
+        <div class="card-body">
+            <p class="p-0 m-0"><strong>Container ID: </strong> {{ container.id }}</p>
+            <p class="p-0 m-0"><strong>Cabinet Time: </strong> {{ container.cabinet_time }}</p>
+            <p class="p-0 m-0"><strong>Loading Location: </strong> {{ container.loading_location }}</p>
+            <p class="p-0 m-0"><strong>Booking Number: </strong> {{ container.booking_number }}</p>
+            <p class="p-0 m-0"><strong>Cabinet Number: </strong> {{ container.cabinet_number }}</p>
+            <p class="p-0 m-0"><strong>Title: </strong> {{ container.title }}</p>
+            <p class="p-0 m-0"><strong>Cabinet Weight: </strong> {{ container.cabinet_weight }}</p>
+            <p class="p-0 m-0"><strong>Cabinet Type: </strong> {{ container.cabinet_type }}</p>
+            <p class="p-0 m-0"><strong>License Plate: </strong> {{ container.license_plate }}</p>
+            <p class="p-0 m-0"><strong>Driver Name: </strong> {{ container.driver_name }}</p>
+            <p class="p-0 m-0"><strong>Driver Phone: </strong> {{ container.driver_phone }}</p>
+            <p class="p-0 m-0"><strong>Description: </strong> 
+                {% if container.description %}
+                    {{ container.description }}
+                {% else %} - {% endif %}
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button class="btn btn-success" type="button">Edit</button>
+            </div>
+        </div>
+        </div>
+
+        <p class="lead"> 
+            Items 
+            <a type="button" class="btn btn-success rounded-pill ml-3 py-0" href="{% url 'warehouse_items_new' %}">+ Add Item</a>
+        </p>
+        
+        <div class="card shadow mb-5" style="width: 450px;">
+        <div class="card-body">
+            <p class="p-0 m-0"><strong>Total Box: </strong> {{ total_box }}</p>
+            <p class="p-0 m-0"><strong>Total Volume: </strong> {{ total_volume }}</p>
+            <p class="p-0 m-0"><strong>Total Weight: </strong> {{ total_weight }}</p>
+        </div>
+        </div>
+
+        {% if items %}
+        <div style="overflow-x: auto;" class="p-3 mb-5">
+            <table class="table table-hover table-bordered shadow" style="width: 2000px" id="dataTable">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
+                        <th scope="col" style="width: 100px" class="text-center">quantity</th>
+                        <th scope="col" style="width: 150px" class="text-center">entry date</th>
+                        <th scope="col" style="width: 200px" class="text-center">delivery party</th>
+                        <th scope="col" style="width: 200px" class="text-center">marking</th>
+                        <th scope="col" style="width: 600px" class="text-center">product name</th>
+                        <th scope="col" style="width: 150px" class="text-center">volume</th>
+                        <th scope="col" style="width: 150px" class="text-center">weight</th>
+                        <th scope="col" style="width: 100px" class="text-center">image</th>
+                        <th scope="col" style="width: 100px" class="text-center">action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr class="parent dt-hasChild">
+                        <th scope="row">{{ item.item.warehousing_number }}</th>
+                        <td>{{ item.quantity }} {{item.item.quantity_unit}}</td>
+                        <td>{{ item.item.entry_date }}</td>
+                        <td>{{ item.item.delivery_party.name }}</td>
+                        <td>{{ item.item.marking.name }}</td>
+                        <td>{{ item.item.product_name }}</td>
+                        <td>{{ item.volume }}</td>
+                        <td>{{ item.weight }}</td>
+                        <td>
+                            {% if item.item.product_img %} 
+                            <img class="img-thumbnail" src="/media/{{ item.item.product_img }}" alt="no img"/>
+                            {% else %} - {% endif %}
+                        </td>
+                        <td> 
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detail-{{ item.order_item }}"> view </button>
+                        </td>
+                        </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No orders are available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+    {% for item in items %}
+    <div class="modal fade modal-lg" id="detail-{{ item.order_item }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header px-0 m-0">
+            <h5 class="modal-title lead" id="staticBackdropLabel">Detail of: {{ item.item.product_name }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="p-0 m-0"><strong>Warehousing Number: </strong> {{ item.item.warehousing_number }}</p>
+                <p class="p-0 m-0"><strong>Delivery Party: </strong> {{ item.item.delivery_party.name }}</p>
+                <p class="p-0 m-0"><strong>Marking: </strong> {{ item.item.marking }}</p>
+                <p class="p-0 m-0"><strong>Product Name: </strong> {{ item.item.product_name }}</p>
+                <p class="p-0 m-0"><strong>Product Image: </strong> 
+                    {% if item.item.product_img %} 
+                    <img class="img-thumbnail my-3" src="/media/{{ item.item.product_img }}" alt="no img" style="width: 90px;"/>
+                    {% else %} - {% endif %}
+                </p>
+                <p class="p-0 m-0"><strong>Entry Date: </strong> {{ item.item.entry_date }}</p>
+                <p class="p-0 m-0"><strong>Volume: </strong> {{ item.volume }}</p>
+                <p class="p-0 m-0"><strong>Weight: </strong> {{ item.weight }}</p>
+                <p class="p-0 m-0"><strong>quantity: </strong> {{ item.quantity }} {{ item.item.quantity_unit }}</p>
+            </div>
+            <p class="lead"> Descriptions </p>
+            <div class="modal-body table-responsive">
+                <table class="table w-100">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for transfer in item.transfers %}
+                      <tr>
+                        <td>{{ transfer.created_at }}</td>
+                        <td>
+                            {% if transfer.description %}{{ transfer.description }} {% else %} - {% endif%}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+</div>
+
+
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready( function () {
+        $('#dataTable').DataTable();
+    } );
+</script>
+{% endblock %}

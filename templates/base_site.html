@@ -47,10 +47,15 @@
     <!-- jQuert for DataTable -->
     <script src="{% static 'datatable/jquery.dataTables.min.js' %}"></script>
 
+    {% block script %}
+    {% endblock %}
+
     <!-- JS for modal -->
     <script>
-      var myModal = new bootstrap.Modal(document.getElementById('modal'), {})
-      myModal.toggle()
+      if (typeof messages !== 'undefined'){
+        var myModal = new bootstrap.Modal(document.getElementById('modal'), {})
+        myModal.toggle()
+      }
     </script>
   </body>
 </html>

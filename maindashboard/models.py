@@ -54,7 +54,9 @@ class TransferLogisticDetail(models.Model):
     cabinet_weight = models.IntegerField(null=False, blank=False)
     cabinet_type = models.CharField(max_length=50, null=False, blank=False)
     license_plate = models.CharField(max_length=50, null=False, blank=False)
+    driver_name = models.CharField(max_length=100, null=True, blank=True)
     driver_phone = models.CharField(max_length=20, null=False, blank=False)
+    arrived_at = models.DateTimeField(null=True, blank=True)
 
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

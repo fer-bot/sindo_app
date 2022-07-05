@@ -4,6 +4,7 @@ from . import viewss
 from .views.warehouse import delivery_party
 from .views.warehouse import marking
 from .views.warehouse import items
+from .views.stuffing import containers
 
 urlpatterns = [
     path('',
@@ -32,5 +33,10 @@ urlpatterns = [
          items.warehouse_items_new, name='warehouse_items_new'),
     path('warehouse/items/edit/<int:item_id>',
          items.warehouse_items_edit, name="warehouse_items_edit"),
+
+    path('stuffing/containers',
+         containers.containers, name='containers'),
+    path('stuffing/containers/view/<int:container_id>',
+         containers.containers_view, name='containers_view'),
 
 ]
