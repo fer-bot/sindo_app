@@ -1,12 +1,11 @@
-from ast import Del
 from itertools import product
-import re
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.db.models import OuterRef, Subquery, Sum
 from django.db.models.functions import Coalesce
+from django.http import Http404
 
 from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail
 from maindashboard.views.warehouse.marking import marking
@@ -52,12 +51,10 @@ def warehouse_items_new(request):
             'warehouse/warehouse_items/warehouse_items_new.html')
         return HttpResponse(template.render(context, request))
     if request.method == 'POST':
-        # print(request.FILES["productImage"], "aaa")
-        # return
         try:
             quantity_unit = request.POST["quantityUnit"]
             delivery_party = DeliveryParty.objects.get(
-            pk=request.POST["deliveryParty"])
+                pk=request.POST["deliveryParty"])
             marking = Marking.objects.get(pk=request.POST["marking"])
             product_name = request.POST["productName"]
             product_img = request.FILES["productImage"]
@@ -105,94 +102,74 @@ def warehouse_items_new(request):
 def warehouse_items_edit(request, item_id):
     if request.method == 'GET':
         item = get_object_or_404(OrderItem, pk=item_id)
-        deliveryParty = DeliveryParty.objects.order_by('name')
         item.entry_date = item.entry_date.strftime("%Y-%m-%d")
-        selectedDeliveryParty = get_object_or_404(DeliveryParty, pk=item.delivery_party_id)
-        selectedMarking = get_object_or_404(Marking , pk = item.marking_id)
-        selectedTransferInfo = TransferInfo.objects.filter(order_item_id = item.warehousing_number).all()
-        checkQty = []
-        for x in selectedTransferInfo : 
-            if(x.from_detail != 'china retail'):
-                orderQty = x.order_quantity * -1
-            else:
-                orderQty = x.order_quantity
-            checkQty.append(orderQty)
-        sumQty = sum(checkQty)
-        markings =  Marking.objects.order_by('name')
+
+        deliveryParty = DeliveryParty.objects.order_by('name')
+        markings = Marking.objects.order_by('name')
+
+        location = request.GET.get('location', '')
+        if location not in ('shenzhen warehouse', 'guangzhou warehouse'):
+            Http404("Invalid location")
+        transfer_to = TransferInfo.objects.filter(
+            order_item=item).filter(to_detail=location).aggregate(total_box=Sum('order_quantity'))
+        transfer_from = TransferInfo.objects.filter(
+            order_item=item).filter(from_detail=location).aggregate(total_box=Sum('order_quantity'))
+
         context = {
-            'item': item, 
-            'qtyTransferInfo' : sumQty,
-            'deliveryParty' : deliveryParty, 
-            'selectedDeliveryParty' : selectedDeliveryParty,
-            'selectedMarking' : selectedMarking,
-            'markings' : markings
+            'item': item,
+            'qtyTransferInfo': transfer_to["total_box"] - transfer_from["total_box"],
+            'deliveryParty': deliveryParty,
+            'markings': markings,
+            'selectedDeliveryParty': item.delivery_party,
+            'selectedMarking': item.marking,
+            'location': location
         }
         template = loader.get_template(
             'warehouse/warehouse_items/warehouse_items_edit.html')
         return HttpResponse(template.render(context, request))
-    elif request.method == 'POST':
-        quantity_unit = request.POST["quantityUnit"]
-        product_name = request.POST["productName"]
-        product_img = request.FILES.get("productImage",False)
-        entry_date = request.POST["entryDate"]
-        volume = request.POST["volume"]
-        weight = request.POST["weight"]
-        description = request.POST["description"]
-        order_quantity = request.POST["quantity"]
 
-        item = get_object_or_404(OrderItem, pk=item_id)
+    if request.method == 'POST':
+        try:
+            quantity_unit = request.POST["quantityUnit"]
+            product_name = request.POST["productName"]
+            product_img = request.FILES.get("productImage", False)
+            entry_date = request.POST["entryDate"]
+            volume = request.POST["volume"]
+            weight = request.POST["weight"]
+            description = request.POST["description"]
+            order_quantity = request.POST["quantity"]
 
+            prev_qty = request.POST["prevQuantity"]
+            location = request.GET.get('location', '')
+            if location not in ('shenzhen warehouse', 'guangzhou warehouse'):
+                Http404("Invalid location")
 
-        item.quantity_unit = quantity_unit
-        item.product_name = product_name
-        item.entry_date = entry_date
-        item.volume = volume
-        item.weight = weight
-        item.description = description
+            item = get_object_or_404(OrderItem, pk=item_id)
+            item.quantity_unit = quantity_unit
+            item.product_name = product_name
+            item.entry_date = entry_date
+            item.volume = volume
+            item.weight = weight
+            item.description = description
+            if product_img:
+                item.product_img = product_img
+            item.save()
 
-        item.save()
-        transferInfoSingle= get_object_or_404(TransferInfo, pk=item_id)
-        warehousePlace = ""
-        if(transferInfoSingle.from_detail != "china retail"): 
-            warehousePlace = transferInfoSingle.from_detail
-        else :
-            warehousePlace = transferInfoSingle.to_detail
-        transferInfoSelected = TransferInfo.objects.filter(order_item_id = item_id).all()
-        checkQty = []
-        for x in transferInfoSelected : 
-            if(x.from_detail != 'china retail'):
-                orderQty = x.order_quantity * -1
-            else:
-                orderQty = x.order_quantity
-            checkQty.append(orderQty)
-        sumQty = sum(checkQty)
-        intOrderQty = int(order_quantity)
-        qtyFinal = 0
-        if(sumQty > intOrderQty) : 
-            #barang kurang
-            from_detail = warehousePlace
-            to_detail = 'china retail'
-            qtyFinal = sumQty-intOrderQty
-        elif(sumQty == int(order_quantity)) : 
-            None
-        else : 
-            #barang nambah
-            from_detail = 'china retail'
-            to_detail = warehousePlace
-            qtyFinal = intOrderQty - sumQty
-
-        newTransferInfo = TransferInfo(
-                from_detail=from_detail,
-                to_detail=to_detail,
+            newTransferInfo = TransferInfo(
+                from_detail='china retail',
+                to_detail=location,
                 order_item=item,
-                order_quantity=qtyFinal,
+                order_quantity=int(order_quantity)-int(prev_qty),
                 volume=item.volume,
                 weight=item.weight,
                 description="automated"
             )
-        newTransferInfo.save()
+            newTransferInfo.save()
 
-        messages.info(
-                request, f'Adding Item with ID is successful!')
-        return redirect('/warehouse/items')
-
+            messages.info(
+                request, f'Successfully changing the details')
+            return redirect('/warehouse/items')
+        except:
+            messages.info(
+                request, f'Failed! Please re-check the starred input and try again!')
+            return redirect('/warehouse/items/new')
