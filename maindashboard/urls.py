@@ -48,6 +48,8 @@ urlpatterns = [
          containers.containers, name='containers'),
     path('stuffing/containers/view/<int:container_id>',
          containers.containers_view, name='containers_view'),
+    path('stuffing/containers/ship/<int:container_id>',
+         containers.containers_ship, name='containers_ship'),
     path('stuffing/containers/edit/<int:container_id>/details',
          containers.containers_edit_details, name='containers_edit_details'),
     path('stuffing/containers/edit/<int:container_id>/item/<int:item_id>',

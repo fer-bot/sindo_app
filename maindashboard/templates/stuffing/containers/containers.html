@@ -40,6 +40,7 @@
                         <th scope="col" style="width: 150px" class="text-center">liscense plate</th>
                         <th scope="col" style="width: 200px" class="text-center">driver name</th>
                         <th scope="col" style="width: 120px" class="text-center">driver phone</th>
+                        <th scope="col" style="width: 50px" class="text-center">status</th>
                         <th scope="col" style="width: 300px" class="text-center">description</th>
                         <th scope="col" style="width: 100px" class="text-center">action</th>
                     </tr>
@@ -57,14 +58,24 @@
                         <td>{{ container.cabinet_type }}</td>
                         <td>{{ container.license_plate }}</td>
                         <td>{{ container.driver_name }}</td>
-                        <td>{{ container.driver_phone}}</td>
+                        <td>{{ container.driver_phone }}</td>
                         <td>
-                            {% if order.description %} 
-                            {{ order.description }}
+                            {% if container.shipped_at %}
+                                <span class="badge rounded-pill text-bg-success">shipped</span>
+                            {% else %}
+                                <span class="badge rounded-pill text-bg-secondary">draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if container.description %} 
+                            {{ container.description }}
                             {% else %} - {% endif %}
                         </td>
                         <td> 
                             <a class="btn btn-sm btn-primary" href="{% url 'containers_view' container.id %}"> view </a>
+                            {% if not container.shipped_at %}
+                                <a class="btn btn-sm btn-warning" href="{% url 'containers_ship' container.id %}"> ship </a>
+                            {% endif %}
                         </td>
                         </tr>
                     {% endfor %}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
@@ -11,7 +12,8 @@ from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo
 def containers(request):
     if request.method == 'GET':
 
-        containers = TransferLogisticDetail.objects.order_by("cabinet_time")
+        containers = TransferLogisticDetail.objects.exclude(
+            arrived_at__isnull=False).order_by("cabinet_time")
         context = {
             'orders': [],
             'containers': containers,
@@ -95,6 +97,23 @@ def containers_view(request, container_id):
         template = loader.get_template(
             'stuffing/containers/containers_view.html')
         return HttpResponse(template.render(context, request))
+
+
+def containers_ship(request, container_id):
+    if request.method == 'GET':
+        try:
+            container = get_object_or_404(
+                TransferLogisticDetail, pk=container_id)
+            container.shipped_at = datetime.now()
+            container.save()
+
+            messages.info(
+                request, f'Shipping container id {container_id} is successful!')
+            return redirect(f'/stuffing/containers')
+        except:
+            messages.info(
+                request, f'Shipping container id {container_id} is Unsuccessful!')
+            return redirect(f'/stuffing/containers')
 
 
 def containers_edit_details(request, container_id):
