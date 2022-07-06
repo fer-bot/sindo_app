@@ -1,0 +1,63 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<!-- {% include "header_basic.html" %} -->
+
+<div class="wrapper d-flex align-items-stretch" style="min-height: 100vh; max-height: max-content;">
+
+    {% include "sidebar.html" %}
+
+    <div class="bg-white w-100 p-3" style="overflow-y: auto;">
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">Admin</li>
+              <li class="breadcrumb-item"><a href="{% url 'users' %}">Users</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+        <div style="display: flex; justify-content: space-between;">
+            <h3 class="p-1"> Edit User </h3>
+        </div>
+        <div class="border-top m-0 mb-3"></div>
+
+        <div class="card shadow" style="width: 400px;">
+        <div class="card-body">
+        <form action="{% url 'users_edit' user.username%}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="username" class="form-label" required>Username</label>
+              <input type="text" class="form-control" id="username" name="username" value="{{user.username}}">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label" required>Email</label>
+              <input type="text" class="form-control" id="email" name="email" value="{{user.email}}">
+            </div>
+            <div class="mb-3">
+              <label for="permissions" class="form-label" required>Permissions</label>
+              {% if user.is_superuser %}
+              <p class="lead"> User is a superuser</p>
+              {% else %}
+              {% for permission in permissions %}
+
+              <div class="form-check form-switch">
+                {{ permission.has }}
+              {% if permission.has %}
+                <input class="form-check-input" type="checkbox" role="switch" id="{{permission.permission}}" name="{{permission.permission}}" checked>
+              {% else %}
+                <input class="form-check-input" type="checkbox" role="switch" id="{{permission.permission}}" name="{{permission.permission}}">
+              {% endif %}
+                <label class="form-check-label" for="flexSwitchCheckDefault">{{permission.permission}}</label>
+              </div>
+
+              {% endfor %}
+              {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

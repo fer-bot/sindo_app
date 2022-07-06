@@ -1,14 +1,18 @@
 from datetime import datetime
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.db.models import OuterRef, Subquery, Sum, FloatField, ExpressionWrapper, Q, F
 from django.db.models.functions import Coalesce
 
+from maindashboard.views.main.user_permissions import permissions
 from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail, TransferMoneyDetail
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers(request):
     if request.method == 'GET':
 
@@ -23,6 +27,8 @@ def containers(request):
         return HttpResponse(template.render(context, request))
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_view(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
@@ -99,6 +105,8 @@ def containers_view(request, container_id):
         return HttpResponse(template.render(context, request))
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_ship(request, container_id):
     if request.method == 'GET':
         try:
@@ -116,6 +124,8 @@ def containers_ship(request, container_id):
             return redirect(f'/stuffing/containers')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_edit_details(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
@@ -156,6 +166,8 @@ def containers_edit_details(request, container_id):
             return redirect(f'/stuffing/containers/edit/{container_id}/details')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_edit_item(request, container_id, item_id):
     if request.method == 'GET':
         transfer_info = TransferInfo.objects.filter(
@@ -240,6 +252,8 @@ def containers_edit_item(request, container_id, item_id):
             return redirect(f'/stuffing/containers/edit/{container_id}/item/{item_id}')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_add_item(request, container_id):
     if request.method == 'GET':
         container = get_object_or_404(TransferLogisticDetail, pk=container_id)
@@ -304,6 +318,8 @@ def containers_add_item(request, container_id):
             return redirect(f'/stuffing/containers/edit/{container_id}/add_item')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.STUFFING_CONTAINER).first() != None, login_url='/login')
 def containers_new(request):
     if request.method == 'GET':
         context = {}

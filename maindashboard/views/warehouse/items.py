@@ -1,5 +1,5 @@
-from itertools import product
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.template import loader
@@ -7,10 +7,12 @@ from django.db.models import OuterRef, Subquery, Sum
 from django.db.models.functions import Coalesce
 from django.http import Http404
 
+from maindashboard.views.main.user_permissions import permissions
 from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo, TransferLogisticDetail
-from maindashboard.views.warehouse.marking import marking
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_ITEMS).first() != None, login_url='/login')
 def warehouse_items(request):
     if request.method == 'GET':
 
@@ -39,6 +41,8 @@ def warehouse_items(request):
         return HttpResponse(template.render(context, request))
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_ITEMS).first() != None, login_url='/login')
 def warehouse_items_new(request):
     if request.method == 'GET':
         delivery_parties = DeliveryParty.objects.order_by('name')
@@ -99,6 +103,8 @@ def warehouse_items_new(request):
             return redirect('/warehouse/items/new')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_ITEMS).first() != None, login_url='/login')
 def warehouse_items_edit(request, item_id):
     if request.method == 'GET':
         item = get_object_or_404(OrderItem, pk=item_id)
@@ -177,6 +183,8 @@ def warehouse_items_edit(request, item_id):
             return redirect(f'/warehouse/items/edit/{item_id}?location={location}')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_ITEMS).first() != None, login_url='/login')
 def warehouse_items_move(request, item_id):
     if request.method == 'GET':
         try:
@@ -204,4 +212,3 @@ def warehouse_items_move(request, item_id):
             messages.info(
                 request, f'Moving item {item_id} from shenzhen to guangzhou unsuccessful! Please try again.')
             return redirect('/warehouse/items')
-            

@@ -1,13 +1,17 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from django.template import loader
 from django.db.models import OuterRef, Subquery, Sum
 from django.db.models.functions import Coalesce
 
+from maindashboard.views.main.user_permissions import permissions
 from maindashboard.models import DeliveryParty, Marking, OrderItem, TransferInfo
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_DELIVERYPARTY).first() != None, login_url='/login')
 def delivery_party(request):
     if request.method == 'GET':
         delivery_parties = DeliveryParty.objects.order_by('name')
@@ -19,6 +23,8 @@ def delivery_party(request):
         return HttpResponse(template.render(context, request))
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_DELIVERYPARTY).first() != None, login_url='/login')
 def delivery_party_new(request):
     if request.method == 'GET':
         context = {}
@@ -42,6 +48,8 @@ def delivery_party_new(request):
             return redirect('/warehouse/delivery_party/new')
 
 
+@user_passes_test(lambda u: u.is_superuser or u.user_permissions.filter(
+    name=permissions.WAREHOUSE_DELIVERYPARTY).first() != None, login_url='/login')
 def delivery_party_edit(request, party_id):
     if request.method == "GET":
         party = get_object_or_404(DeliveryParty, pk=party_id)
