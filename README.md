@@ -1,3 +1,8 @@
+# Sindo App
+
+My Personal project to streamline importing goods process from China to Indonesia with multiple user types with multiple permissions
+for relative’s company :)
+
 ## Getting Started
 
 1. install virtualenv (`pip install virtualenv`)
