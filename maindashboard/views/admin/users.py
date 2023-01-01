@@ -66,18 +66,18 @@ def users_new(request):
 @user_passes_test(lambda u: u.is_superuser, login_url='/login')
 def users_edit(request, username):
     if request.method == 'GET':
-        user = get_object_or_404(User, username=username)
+        edited_user = get_object_or_404(User, username=username)
         user_permissions = []
 
         for p in permissions.permission_list:
             tmp = {}
             tmp["permission"] = p
-            tmp["has"] = bool(user.user_permissions.filter(
+            tmp["has"] = bool(edited_user.user_permissions.filter(
                 name=p).first() != None)
             user_permissions.append(tmp)
 
         context = {
-            "user": user,
+            "edited_user": edited_user,
             "permissions": user_permissions,
         }
         template = loader.get_template('admin/users/users_edit.html')

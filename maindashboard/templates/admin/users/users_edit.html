@@ -23,25 +23,24 @@
 
         <div class="card shadow" style="width: 400px;">
         <div class="card-body">
-        <form action="{% url 'users_edit' user.username%}" method="post">
+        <form action="{% url 'users_edit' edited_user.username%}" method="post">
             {% csrf_token %}
             <div class="mb-3">
               <label for="username" class="form-label" required>Username</label>
-              <input type="text" class="form-control" id="username" name="username" value="{{user.username}}">
+              <input type="text" class="form-control" id="username" name="username" value="{{edited_user.username}}">
             </div>
             <div class="mb-3">
               <label for="email" class="form-label" required>Email</label>
-              <input type="text" class="form-control" id="email" name="email" value="{{user.email}}">
+              <input type="text" class="form-control" id="email" name="email" value="{{edited_user.email}}">
             </div>
             <div class="mb-3">
               <label for="permissions" class="form-label" required>Permissions</label>
-              {% if user.is_superuser %}
+              {% if edited_user.is_superuser %}
               <p class="lead"> User is a superuser</p>
               {% else %}
               {% for permission in permissions %}
 
               <div class="form-check form-switch">
-                {{ permission.has }}
               {% if permission.has %}
                 <input class="form-check-input" type="checkbox" role="switch" id="{{permission.permission}}" name="{{permission.permission}}" checked>
               {% else %}
