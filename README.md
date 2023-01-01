@@ -1,7 +1,7 @@
 # Sindo App
 
 My Personal project to streamline importing goods process from China to Indonesia with multiple user types with multiple permissions
-for relative’s company :)
+for relative's company :)
 
 ## Getting Started
 
