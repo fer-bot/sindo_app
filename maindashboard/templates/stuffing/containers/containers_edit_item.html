@@ -29,6 +29,11 @@
                 {% csrf_token %}
 
                 <div class="mb-3">
+                    <label for="quantity" class="form-label">Reminder Quantity</label>
+                    <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" value="{{reminder}}" required disabled>
+                </div>
+
+                <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity</label>
                     <input type="hidden" id="prevQuantity" name="prevQuantity" value="{{quantity}}">
                     <input type="number" min="0" class="form-control" id="quantity" name="quantity" step="1" value="{{quantity}}" required>

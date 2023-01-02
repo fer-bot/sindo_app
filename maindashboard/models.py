@@ -26,6 +26,7 @@ class Marking(models.Model):
 
 class OrderItem(models.Model):
     warehousing_number = models.BigAutoField(primary_key=True)
+    company_number = models.CharField(max_length=10)
     quantity_unit = models.CharField(max_length=20, default="box")
     delivery_party = models.ForeignKey(
         DeliveryParty, on_delete=models.CASCADE, null=False, blank=False)

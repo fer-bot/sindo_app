@@ -67,7 +67,9 @@
                 <thead>
                     <tr>
                         <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
+                        <th scope="col" style="width: 100px" class="text-center">company number</th>
                         <th scope="col" style="width: 100px" class="text-center">quantity</th>
+                        <th scope="col" style="width: 100px" class="text-center">reminder</th>
                         <th scope="col" style="width: 150px" class="text-center">entry date</th>
                         <th scope="col" style="width: 200px" class="text-center">delivery party</th>
                         <th scope="col" style="width: 200px" class="text-center">marking</th>
@@ -84,7 +86,9 @@
                     {% for item in items %}
                         <tr class="parent dt-hasChild">
                         <th scope="row">{{ item.item.warehousing_number }}</th>
+                        <td>{{ item.item.company_number }}</td>
                         <td>{{ item.quantity }} {{item.item.quantity_unit}}</td>
+                        <td>{{ item.reminder }} {{item.item.quantity_unit}}</td>
                         <td>{{ item.item.entry_date }}</td>
                         <td>{{ item.item.delivery_party.name }}</td>
                         <td>{{ item.item.marking.name }}</td>

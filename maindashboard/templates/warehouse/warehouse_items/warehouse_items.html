@@ -29,6 +29,7 @@
                 <thead>
                     <tr>
                         <th scope="col" style="width: 100px" class="text-center">warehousing number</th>
+                        <th scope="col" style="width: 100px" class="text-center">company number</th>
                         <th scope="col" style="width: 100px" class="text-center">quantity</th>
                         <th scope="col" style="width: 150px" class="text-center">entry date</th>
                         <th scope="col" style="width: 200px" class="text-center">delivery party</th>
@@ -48,6 +49,7 @@
                     {% if order.sz_qty %}
                         <tr>
                         <th scope="row">{{ order.warehousing_number }}</th>
+                        <td>{{ order.company_number }}</td>
                         <td>{{ order.sz_qty }} {{order.quantity_unit}}</td>
                         <td>{{ order.entry_date }}</td>
                         <td>{{ order.delivery_party.name }}</td>
@@ -91,6 +93,7 @@
                     {% if order.gz_qty %}
                         <tr>
                         <th scope="row">{{ order.warehousing_number }}</th>
+                        <td>{{ order.company_number }}</td>
                         <td>{{ order.gz_qty }} {{order.quantity_unit}}</td>
                         <td>{{ order.entry_date }}</td>
                         <td>{{ order.delivery_party.name }}</td>

@@ -57,6 +57,7 @@ def warehouse_items_new(request):
     if request.method == 'POST':
         try:
             quantity_unit = request.POST["quantityUnit"]
+            company_number = request.POST["companyNumber"]
             delivery_party = DeliveryParty.objects.get(
                 pk=request.POST["deliveryParty"])
             marking = Marking.objects.get(pk=request.POST["marking"])
@@ -72,6 +73,7 @@ def warehouse_items_new(request):
 
             newItem = OrderItem(
                 quantity_unit=quantity_unit,
+                company_number=company_number,
                 delivery_party=delivery_party,
                 marking=marking,
                 product_name=product_name,
@@ -140,6 +142,7 @@ def warehouse_items_edit(request, item_id):
         try:
             quantity_unit = request.POST["quantityUnit"]
             product_name = request.POST["productName"]
+            company_number = request.POST["companyNumber"]
             product_img = request.FILES.get("productImage", False)
             entry_date = request.POST["entryDate"]
             volume = request.POST["volume"]
@@ -152,6 +155,7 @@ def warehouse_items_edit(request, item_id):
             item = get_object_or_404(OrderItem, pk=item_id)
             item.quantity_unit = quantity_unit
             item.product_name = product_name
+            item.company_number = company_number
             item.entry_date = entry_date
             item.volume = volume
             item.weight = weight

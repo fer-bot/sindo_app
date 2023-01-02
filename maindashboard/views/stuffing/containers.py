@@ -58,10 +58,22 @@ def containers_view(request, container_id):
             total_weight=Sum('weight', output_field=FloatField())
         )
 
+        transfer_to_sz = TransferInfo.objects.filter(
+            order_item=OuterRef("order_item")).filter(to_detail="shenzhen warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+        transfer_from_sz = TransferInfo.objects.filter(
+            order_item=OuterRef("order_item")).filter(from_detail="shenzhen warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+        transfer_to_gz = TransferInfo.objects.filter(
+            order_item=OuterRef("order_item")).filter(to_detail="guangzhou warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+        transfer_from_gz = TransferInfo.objects.filter(
+            order_item=OuterRef("order_item")).filter(from_detail="guangzhou warehouse").values("order_item").annotate(total_box=Sum('order_quantity'))
+
         items = TransferInfo.objects.filter(
             to_detail=f"container-{container_id}").values("order_item").annotate(
                 quantity=Coalesce(Subquery(items_to_container.values(
                     "total_box")), 0) - Coalesce(Subquery(items_from_container.values("total_box")), 0),
+                reminder=Coalesce(Subquery(transfer_to_sz.values("total_box")), 0) - Coalesce(Subquery(transfer_from_sz.values("total_box")), 0) +
+            Coalesce(Subquery(transfer_to_gz.values("total_box")), 0) -
+            Coalesce(Subquery(transfer_from_gz.values("total_box")), 0),
                 volume=ExpressionWrapper(Coalesce(Subquery(items_to_container.values(
                     "total_volume")), 0) - Coalesce(Subquery(items_from_container.values("total_volume")), 0), output_field=FloatField()),
                 weight=ExpressionWrapper(Coalesce(Subquery(items_to_container.values(
@@ -171,9 +183,7 @@ def containers_edit_details(request, container_id):
 def containers_edit_item(request, container_id, item_id):
     if request.method == 'GET':
         transfer_info = TransferInfo.objects.filter(
-            Q(to_detail=f"container-{container_id}") | Q(to_detail=f"container-{container_id}"), order_item=item_id)
-
-        print(transfer_info)
+            Q(to_detail=f"container-{container_id}") | Q(from_detail=f"container-{container_id}"), order_item=item_id)
 
         box, volume, weight, price, turnover = 0, 0, 0, 0, 0
 
@@ -195,10 +205,29 @@ def containers_edit_item(request, container_id, item_id):
                 volume -= transfer.volume
                 weight -= transfer.weight
 
+        reminder = 0
+
+        transfer_info_sz = TransferInfo.objects.filter(
+            Q(to_detail=f"shenzhen warehouse") | Q(from_detail=f"shenzhen warehouse"), order_item=item_id)
+        for transfer in transfer_info_sz:
+            if transfer.to_detail == "shenzhen warehouse":
+                reminder += transfer.order_quantity
+            if transfer.from_detail == "shenzhen warehouse":
+                reminder -= transfer.order_quantity
+
+        transfer_info_gz = TransferInfo.objects.filter(
+            Q(to_detail=f"guangzhou warehouse") | Q(from_detail=f"guangzhou warehouse"), order_item=item_id)
+        for transfer in transfer_info_gz:
+            if transfer.to_detail == "guangzhou warehouse":
+                reminder += transfer.order_quantity
+            if transfer.from_detail == "guangzhou warehouse":
+                reminder -= transfer.order_quantity
+
         context = {
             "container_id": container_id,
             "item_id": item_id,
             "quantity": box,
+            "reminder": reminder,
             "volume": volume,
             "weight": weight,
             "price": price,
