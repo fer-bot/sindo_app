@@ -71,7 +71,7 @@ def verify_edit(request, item_id):
         transfer_to = TransferInfo.objects.filter(
             order_item=item).filter(to_detail=location).aggregate(total_box=Coalesce(Sum('order_quantity'), 0))
         transfer_from = TransferInfo.objects.filter(
-            order_item=item).filter(from_detail=location).aggregate(total_box=Coalasce(Sum('order_quantity'), 0))
+            order_item=item).filter(from_detail=location).aggregate(total_box=Coalesce(Sum('order_quantity'), 0))
 
         context = {
             'item': item,
