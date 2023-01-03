@@ -69,9 +69,9 @@ def verify_edit(request, item_id):
         if location not in ('shenzhen warehouse', 'guangzhou warehouse'):
             Http404("Invalid location")
         transfer_to = TransferInfo.objects.filter(
-            order_item=item).filter(to_detail=location).aggregate(total_box=Sum('order_quantity'))
+            order_item=item).filter(to_detail=location).aggregate(total_box=Coalesce(Sum('order_quantity'), 0))
         transfer_from = TransferInfo.objects.filter(
-            order_item=item).filter(from_detail=location).aggregate(total_box=Sum('order_quantity'))
+            order_item=item).filter(from_detail=location).aggregate(total_box=Coalasce(Sum('order_quantity'), 0))
 
         context = {
             'item': item,
